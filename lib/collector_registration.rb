@@ -69,7 +69,7 @@ class CollectorRegistration
 
   def credentials_present?
     @configuration.present_value?(:on_prem_application_id) && @configuration.present_value?(:on_prem_application_secret) &&
-        @configuration.present_value?(:on_prem_login_email) && @configuration.present_value?(:on_prem_login_password)
+      @configuration.present_value?(:on_prem_login_email) && @configuration.present_value?(:on_prem_login_password)
   end
 
   def verify_connection_from_credentials

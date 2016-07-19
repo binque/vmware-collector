@@ -111,7 +111,7 @@ module Executables
 
     def thread_limit
       if configuration[:vsphere_session_limit] &&
-          configuration[:vsphere_session_limit] > VSPHERE_CONNECTIONS_THRESHOLD
+         configuration[:vsphere_session_limit] > VSPHERE_CONNECTIONS_THRESHOLD
         configuration[:vsphere_session_limit] - VSPHERE_CONNECTIONS_LOOSENESS
       else
         MINIMUM_VSPHERE_CONNECTIONS

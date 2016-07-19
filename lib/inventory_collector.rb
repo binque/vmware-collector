@@ -44,7 +44,7 @@ class InventoryCollector
     logger.info "Collecting inventory for #{@infrastructure.name} at #{time_to_query}"
     results = VSphere.wrapped_vsphere_request do
       @vsphere_session.propertyCollector.WaitForUpdatesEx(version: @version,
-                                                          options: {maxWaitSeconds: 0})
+                                                          options: { maxWaitSeconds: 0 })
     end
     collected_machines = []
     while results
@@ -133,7 +133,7 @@ class InventoryCollector
 
       results = VSphere.wrapped_vsphere_request do
         @vsphere_session.propertyCollector.WaitForUpdatesEx(version: @version,
-                                                            options: {maxWaitSeconds: 0})
+                                                            options: { maxWaitSeconds: 0 })
       end
     end
 

@@ -33,8 +33,7 @@ class MongoHash < Hash
     @klass = klass
     @key = key
     # Fill in hash values
-    filtered_items.each {|item|
-      self.store(item[@key],item) }
+    filtered_items.each { |item| self.store(item[@key], item) }
     # Initialize some state
     @initial_inventory = keys
     @updates = Array.new

@@ -9,7 +9,7 @@ require 'open3'
 require_relative 'app_constants'
 
 # loading all lib files
-Dir.glob("./lib/**/*.rb", &method(:require))
+Dir.glob('./lib/**/*.rb', &method(:require))
 
 include Logging
 include GlobalConfiguration

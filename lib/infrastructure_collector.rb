@@ -12,8 +12,8 @@ class InfrastructureCollector
   MEGABIT_TO_BIT = 1_000_000
   BASIC_INFRASTRUCTURE_FIELDS = [:name, :platform_id, :tags]
   BASIC_HOST_FIELDS = [:platform_id, :uuid, :name, :cluster, :cluster_platform_id, :cpu_hz, :cpu_model,
-    :cpu_cores, :sockets, :threads, :cpus, :memory, :vendor, :model, :os,
-    :os_version, :os_vendor, :inventory]
+                       :cpu_cores, :sockets, :threads, :cpus, :memory, :vendor, :model, :os,
+                       :os_version, :os_vendor, :inventory]
   def initialize
     logger.info 'Initializing infrastructure collector'
     @local_inventory = InfrastructureInventory.new
@@ -36,7 +36,7 @@ class InfrastructureCollector
     begin
       results = VSphere.wrapped_vsphere_request do
         VSphere.session.propertyCollector.WaitForUpdatesEx(version: @version,
-                                                           options: {maxWaitSeconds: 0})
+                                                           options: { maxWaitSeconds: 0 })
       end
       while results
         update = true
@@ -65,7 +65,7 @@ class InfrastructureCollector
 
         results = VSphere.wrapped_vsphere_request do
           VSphere.session.propertyCollector.WaitForUpdatesEx(version: @version,
-                                                             options: {maxWaitSeconds: 0})
+                                                             options: { maxWaitSeconds: 0 })
         end
       end
     rescue RbVmomi::Fault => e
@@ -77,7 +77,7 @@ class InfrastructureCollector
       end
     end
     if update
-    # Re-set host cluster (moref -> name)
+      # Re-set host cluster (moref -> name)
       @host_objects = {}
 
       @hosts.each do |key, host|
@@ -114,32 +114,32 @@ class InfrastructureCollector
     infrastructure = Infrastructure.where(platform_id: properties[:platform_id])
     if infrastructure.present?
       current_infrastructure = infrastructure.first
-      update_fields_for(current_infrastructure,properties)
+      update_fields_for(current_infrastructure, properties)
     else
       Infrastructure.new(properties)
     end
   end
 
-  def update_fields_for(current_infrastructure,properties)
-    BASIC_INFRASTRUCTURE_FIELDS.each{|field| current_infrastructure[field] = properties[field] }
+  def update_fields_for(current_infrastructure, properties)
+    BASIC_INFRASTRUCTURE_FIELDS.each { |field| current_infrastructure[field] = properties[field] }
     current_infrastructure[:networks] = properties[:networks] ? build_updated_networks(properties) : []
     current_infrastructure[:volumes] = properties[:volumes] ? build_updated_volumes(properties) : []
     current_infrastructure.record_status = 'updated'
-    current_infrastructure = update_hosts(properties,current_infrastructure)
+    current_infrastructure = update_hosts(properties, current_infrastructure)
     current_infrastructure.save
     current_infrastructure
   end
 
-  def update_hosts(properties,current_infrastructure)
+  def update_hosts(properties, current_infrastructure)
     properties[:hosts].each do |h|
       host = current_infrastructure.hosts.where(platform_id: h[:platform_id]).first
-      host.present? ? update_host(host,h) : current_infrastructure.hosts << h
+      host.present? ? update_host(host, h) : current_infrastructure.hosts << h
     end
     if properties[:hosts].empty?
       current_infrastructure.hosts = []
     else
       current_infrastructure.hosts = current_infrastructure.hosts.map do |h|
-        h if properties[:hosts].select{|val| val[:platform_id] == h[:platform_id]}.any?
+        h if properties[:hosts].select { |val| val[:platform_id] == h[:platform_id] }.any?
       end
     end
     current_infrastructure
@@ -147,31 +147,30 @@ class InfrastructureCollector
 
   def build_updated_networks(properties)
     properties[:networks].map do |n|
-      {'_id': n['_id'], 'kind' => n['kind'], 'name'=> n['name']}
+      { '_id': n['_id'], 'kind' => n['kind'], 'name'=> n['name'] }
     end
   end
 
   def build_updated_volumes(properties)
     properties[:volumes].map do |v|
-      { '_id'=> v['_id'], 'storage_bytes' => v['storage_bytes'],
-        'free_space'=> v['free_space'], 'accessible' => v['accessible'],
-        'volume_type' => v['volume_type'],'name'=> v['name']
-      }
+      { '_id' => v['_id'], 'storage_bytes' => v['storage_bytes'],
+        'free_space' => v['free_space'], 'accessible' => v['accessible'],
+        'volume_type' => v['volume_type'], 'name' => v['name'] }
     end
   end
 
-  def update_host(host,new_host)
-    host = update_basic_host_fields_for(host,new_host)
+  def update_host(host, new_host)
+    host = update_basic_host_fields_for(host, new_host)
     platform_id_number = host[:platform_id].match(/[0-9]+/)
     host[:host_bus_adapters] = @host_bus_adapters["storageSystem-#{platform_id_number[0]}"]
     host[:nics] = @nics["networkSystem-#{platform_id_number[0]}"]
     host.save
   end
 
-  def update_basic_host_fields_for(host,new_host)
+  def update_basic_host_fields_for(host, new_host)
     BASIC_HOST_FIELDS.each do |field|
       if field == :cluster_platform_id && @clusters[host[:cluster_platform_id]]
-        host[field]= @clusters[host[:cluster_platform_id]][:platform_id]
+        host[field] = @clusters[host[:cluster_platform_id]][:platform_id]
       elsif !@clusters[host[:cluster_platform_id]] && field == :cluster_platform_id
         if new_host.cluster.present? && new_host.cluster_platform_id.present?
           host[field] = new_host[field]
@@ -223,7 +222,7 @@ class InfrastructureCollector
     end
     if result
       loop do
-        host_ids.push(*(result.objects.map{|obj|obj.moref}))
+        host_ids.push(*(result.objects.map &:moref))
         break unless result.token
         result = VSphere.wrapped_vsphere_request { VSphere.session.propertyCollector.ContinueRetrievePropertiesEx(token: result.token) }
       end
@@ -270,8 +269,8 @@ class InfrastructureCollector
       ],
         propSet: [
         # Need to include datastore to map
-            {type: 'Datacenter', pathSet: %w(name hostFolder network datastore)},
-            {type: 'Datastore', pathSet: %w(info summary)}
+            { type: 'Datacenter', pathSet: %w(name hostFolder network datastore) },
+            { type: 'Datastore', pathSet: %w(info summary) }
       ]
     )
   end

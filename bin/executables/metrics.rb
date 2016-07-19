@@ -44,7 +44,7 @@ module Executables
     def main_thread
       # Iterate over timestamps (from oldest to newest).
       config = GlobalConfiguration::GlobalConfig.instance
-      inventoried_timestamps = InventoriedTimestamp.unlocked_timestamps_for_day('inventoried',config[:on_prem_inventoried_limit])
+      inventoried_timestamps = InventoriedTimestamp.unlocked_timestamps_for_day('inventoried', config[:on_prem_inventoried_limit])
       inventoried_timestamps.each do |it|
         if inventoried_timestamp_unlocked?(it)
           it.locked = true
@@ -54,7 +54,7 @@ module Executables
         end
       end
       inventoried_timestamps_to_be_metered(@container_name).each do |it|
-        next if not inventoried_timestamp_free_to_meter? it
+        next unless inventoried_timestamp_free_to_meter? it
         begin
           time = it.inventory_at < INVENTORY_WIGGLE_TIME.minutes.ago ? FITHTEEN_MINUTES_IN_SECONDS : FIVE_MINUTES_IN_SECONDS
           Timeout.timeout(time) do

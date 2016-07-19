@@ -155,10 +155,10 @@ class HyperClient
   def oauth_token
     first_attempt = true
     @oauth_token ||=
-        if @configuration.present_value?(:on_prem_oauth_token)
+      if @configuration.present_value?(:on_prem_oauth_token)
         logger.debug 'Returning locally saved oauth token'
         @configuration[:on_prem_oauth_token]
-        else
+      else
         begin
           logger.debug "Retrieving oauth token for #{@configuration[:on_prem_login_email]}"
           logger.debug 'Attempting to retrieve oauth access token'
@@ -186,15 +186,15 @@ class HyperClient
           logger.error e
           raise e
         end
-        end
+      end
   end
 
   def oauth_client
     @oauth_client ||= begin
       connection_opts = if @configuration.present_value?(:on_prem_proxy_host)
-                          {proxy: {uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
+                          { proxy: { uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
                                    user: @configuration[:on_prem_proxy_user],
-                                   password: @configuration[:on_prem_proxy_password]}}
+                                   password: @configuration[:on_prem_proxy_password] } }
                         else
                           {}
                         end
@@ -216,9 +216,9 @@ class HyperClient
                          @configuration[:on_prem_application_secret],
                          site: @configuration[:on_prem_oauth_endpoint],
                          connection_opts: @configuration.present_value?(:on_prem_proxy_host) ?
-                             {proxy: {uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
+                             { proxy: { uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
                                       user: @configuration[:on_prem_proxy_user],
-                                      password: @configuration[:on_prem_proxy_password]}} : {})
+                                      password: @configuration[:on_prem_proxy_password] } } : {})
     end
   end
 
@@ -227,9 +227,9 @@ class HyperClient
       OAuth2::Client.new(nil, nil,
                          site: @configuration[:on_prem_oauth_endpoint],
                          connection_opts: @configuration.present_value?(:on_prem_proxy_host) ?
-                             {proxy: {uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
+                             { proxy: { uri: "#{@configuration[:on_prem_proxy_host]}:#{@configuration[:on_prem_proxy_port]}",
                                       user: @configuration[:on_prem_proxy_user],
-                                      password: @configuration[:on_prem_proxy_password]}} : {})
+                                      password: @configuration[:on_prem_proxy_password] } } : {})
 
     end
   end
