@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vsphere-secret
+  namespace: 6fusion-system
+data:
+  host: vcsa01-vsphere55envrionme-stnhl3zt.srv.ravcloud.com                      # Host definition for vsphere
+  user: pvaughn@vsphere.local                      # User information for vpshere
+  password: 7u8i&U*I               # Password information for vsphere
+  ignore-ssl-errors: 1         # Ignore ssl-errors
+  log-level: debug                 # Define log level
+  session-limit: 10000             # Total elements valuable for each session
