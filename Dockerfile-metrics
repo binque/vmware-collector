@@ -1,7 +1,6 @@
 FROM alpine:3.2
 MAINTAINER 6fusion dev <dev@6fusion.com>
 
-# Define all Environment variables in one single layer
 ENV BUILD_PACKAGES build-base curl-dev libffi-dev gcc git zlib-dev
 ENV RUBY_PACKAGES ruby ruby-bundler ruby-dev ruby-io-console ruby-nokogiri
 ENV RUNTIME_PACKAGES ca-certificates bash
@@ -16,7 +15,7 @@ RUN  apk update && \
      apk upgrade && \
      apk add $BUILD_PACKAGES $RUBY_PACKAGES $DEV_PACKAGES $RUNTIME_PACKAGES && \
      bundle install --without test && \
-     rm -rf .git .gitignore .vagrant && \
+     rm -rf .git .gitignore .vagrant init-ssl* secrets_example spec ssl test Vagrantfile && \
      rm -rf /var/cache/apk/*
 
 
