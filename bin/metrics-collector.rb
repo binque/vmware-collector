@@ -28,7 +28,7 @@ def verify_collector_configuration
 end
 
 # always execute the process
-#verify_collector_configuration
+verify_collector_configuration
 
 scheduler_30s = Rufus::Scheduler.new(max_work_threads: 1)
 
