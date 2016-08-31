@@ -125,8 +125,12 @@ class CollectorSyncronization
       end
     end
     machine_count = Machine.distinct(:platform_id).count
-    raise 'No virtual machine inventory discovered' if machine_count == 0
-    logger.info "#{machine_count} virtual machine#{'s' if machine_count > 1} discovered"
+    # raise 'No virtual machine inventory discovered' if machine_count == 0
+    if machine_count == 0
+      logger.warn 'No virtual machine inventory discovered'
+    else
+      logger.info "#{machine_count} virtual machine#{'s' if machine_count > 1} discovered"
+    end
   end
 
   def sync_remote_ids
