@@ -79,12 +79,15 @@ class CollectorSyncronization
 
       infs['embedded']['infrastructures'].each do |inf_json|
         if  Infrastructure.where(remote_id: inf_json['id']).empty?
-          infrastructure = Infrastructure.create({ name: inf_json['name'],
-                                                   remote_id: inf_json['id'],
-                                                   platform_id: inf_json['custom_id'],
-                                                   record_status: 'verified_create' })
-          PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
-                                  remote_id: inf_json['id'])
+          puts "#{ inf_json['organization_id']} == #{@configuration[:organization_id]}"
+          if inf_json['organization_id'] == @configuration[:organization_id]
+            infrastructure = Infrastructure.create({ name: inf_json['name'],
+                                                     remote_id: inf_json['id'],
+                                                     platform_id: inf_json['custom_id'],
+                                                     record_status: 'verified_create' })
+            PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
+                                    remote_id: inf_json['id'])
+          end
         end
       end
     end
