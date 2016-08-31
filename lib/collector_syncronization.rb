@@ -44,6 +44,7 @@ class CollectorSyncronization
 
     @on_prem_connector = OnPremConnector.new
     get_infrastructures_from_api
+    collect_infrastructures
     submit_infrastructures
     collect_machine_inventory
     sync_remote_ids

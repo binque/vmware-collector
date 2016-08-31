@@ -12,7 +12,7 @@ require_relative 'executables/missing_readings_cleaner'
 
 init_configuration
 
-unless VmwareConfiguration.first and  VmwareConfiguration.first.configured
+unless VmwareConfiguration.first and VmwareConfiguration.first.configured
   logger.info 'Inventory collector has not been configured. Please configure using the registration wizard.'
   exit(0)
 end
