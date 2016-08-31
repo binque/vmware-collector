@@ -80,7 +80,8 @@ class CollectorSyncronization
       infs['embedded']['infrastructures'].each do |inf_json|
         if  Infrastructure.where(remote_id: inf_json['id']).empty?
           puts "#{ inf_json['organization_id']} == #{@configuration[:on_prem_organization_id]}"
-          if inf_json['organization_id'] == @configuration[:organization_id]
+          if inf_json['organization_id'] == @configuration[:on_prem_organization_id]
+            puts "\tCreating stub infrastructure"
             infrastructure = Infrastructure.create({ name: inf_json['name'],
                                                      remote_id: inf_json['id'],
                                                      platform_id: inf_json['custom_id'],
