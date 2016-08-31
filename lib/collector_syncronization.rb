@@ -41,8 +41,9 @@ class CollectorSyncronization
 
   def start_sync
     logger.info 'Syncing items'
+
     @on_prem_connector = OnPremConnector.new
-    collect_infrastructures
+    get_infrastructures_from_api
     submit_infrastructures
     collect_machine_inventory
     sync_remote_ids
@@ -66,6 +67,29 @@ class CollectorSyncronization
       logger.info "#{infrastructures.count} infrastructure#{'s' if infrastructures.count > 1} discovered"
     end
   end
+
+  def get_infrastructures_from_api
+    hyper_client = HyperClient.new
+    local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
+    response = hyper_client.get(infrastructures_url)
+
+    if response.code == 200
+      infs = JSON::parse(response.body)
+
+      infs['embedded']['infrastructures'].each do |inf_json|
+        if  Infrastructure.where(remote_id: inf_json['id']).empty?
+          infrastructure = Infrastructure.create({ name: inf_json['name'],
+                                                   remote_id: inf_json['id'],
+                                                   platform_id: inf_json['custom_id'],
+                                                   record_status: 'verified_create' })
+          PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
+                                  remote_id: inf_json['id'])
+        end
+      end
+    end
+
+  end
+
 
   def submit_infrastructures
     logger.info 'Submitting infrastructures'

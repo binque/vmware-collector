@@ -182,7 +182,8 @@ class Infrastructure
   # Format to submit to OnPrem Console API
   def api_format
     {
-        name: name,
+      name: name,
+      custom_id: platform_id,
         tags: [tags],
         summary: {
             # Counts
