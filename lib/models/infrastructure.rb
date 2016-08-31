@@ -183,7 +183,7 @@ class Infrastructure
   def api_format
     {
       name: name,
-      custom_id: platform_id,
+      custom_id: name,
         tags: [tags],
         summary: {
             # Counts
