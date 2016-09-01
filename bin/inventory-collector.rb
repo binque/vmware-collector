@@ -29,9 +29,11 @@ scheduler_30s.every '30s' do
 end
 
 logger.info 'Inventory and Infrastructure scheduled to run every 5 minutes'
-scheduler_5m.cron '*/5 * * * *' do |job|
+
+hak = Executables::Inventory.new
+scheduler_5m.every '30s' do
   processSignals
-  Executables::Inventory.new(scheduler_5m, job).execute
+  hak.execute
   Executables::Infrastructure.new(scheduler_5m).execute
 end
 
