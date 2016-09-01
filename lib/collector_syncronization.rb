@@ -47,26 +47,30 @@ class CollectorSyncronization
     get_infrastructures_from_vsphere
     submit_infrastructures
 
+    # First block of code is primarily to detect delets
     get_machines_from_api
     api_machines = Machine.where(status: 'api')
 
+    api_machines.each{|m| logger.debug "API machine: #{m.name}: #{m.infrastructure_remote_id}: #{m.status}"}
+
+    # Now we sync remote IDs
+    @on_prem_connector.initialize_platform_ids
+
     collect_machine_inventory
     collected_vsphere_machines = Machine.ne(status: 'api')
+    collected_vsphere_machines.each{|m| logger.debug "Collected vsphere machine: #{m.name}: #{m.infrastructure_platform_id}: #{m.status}"}
 
-    Infrastructure.all.each do |infrastructure|
-      inventory = MachineInventory.new(infrastructure)
-      inventory.set_to_time(@inventory_at)
-      inventory.each do |platform_id, machine|
-        unless collected_vsphere_machines.detect{|m|
-                 m.infrastructure_platform_id.eql?(infrastructure.platform_id) and m.platform_id.eql?(machine.platform_id) }
-          logger.debug "\tFlagging #{machine.name} in #{infrastructure.name} for deletion"
-          machine.status = 'deleted'
-          machine.record_status = 'updated'
-          machine.save
-        end
+    api_machines.each do |machine|
+      unless collected_vsphere_machines.detect{|m|
+               m.infrastructure_remote_id.eql?(machine.infrastructure_remote_id) and m.platform_id.eql?(machine.platform_id) }
+        logger.debug "Flagging #{machine.name} in #{machine.infrastructure_remote_id} for deletion"
+        machine.status = 'deleted'
+        machine.record_status = 'updated'
+        machine.save
       end
-
     end
+
+    Machine.delete_all({status: "api"})
 
     set_configured
   rescue StandardError => e
@@ -128,17 +132,18 @@ class CollectorSyncronization
 
         machines['embedded']['machines'].each do |machine_json|
           if  Machine.where(remote_id: machine_json['id']).empty?
-            logger.debug "\tCreating machine #{machine_json['name']} from retrieved API data"
-            machine = Machine.create({ name: machine_json['name'],
-                                       remote_id: machine_json['id'],
-                                       platform_id: machine_json['custom_id'],
-                                       record_status: 'verified_create',
-                                       status: 'api',
-                                       infrastructure_platform_id: infrastructure.platform_id,
-                                       inventory_at: @inventory_at })
-            PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
-                                    machine: machine_json['custom_id'],
-                                    remote_id: machine_json['id'])
+            unless machine_json['status'].eql?('deleted')
+              logger.debug "Creating machine #{machine_json['name']} from retrieved API data"
+              puts "inf remote id: #{infrastructure.remote_id}"
+              machine = Machine.create({ name: machine_json['name'],
+                                         remote_id: machine_json['id'],
+                                         platform_id: machine_json['custom_id'],
+                                         record_status: 'verified_create',
+                                         status: 'api',
+                                         infrastructure_remote_id: infrastructure.remote_id,
+                                         infrastructure_platform_id: infrastructure.platform_id,
+                                         inventory_at: @inventory_at })
+            end
           end
         end
       else
@@ -180,7 +185,7 @@ class CollectorSyncronization
       rescue StandardError => e
         logger.error e.message
         logger.debug e.backtrace.join("\n")
-#        infrastructure.disable
+        # infrastructure.disable
       end
     end
     machine_count = Machine.distinct(:platform_id).count
