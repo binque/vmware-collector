@@ -12,6 +12,8 @@ require_relative 'executables/missing_readings_cleaner'
 
 init_configuration
 
+logger.debug "Syncronization complete"
+
 unless VmwareConfiguration.first and VmwareConfiguration.first.configured
   logger.info 'Inventory collector has not been configured. Please configure using the registration wizard.'
   exit(0)
@@ -31,7 +33,7 @@ end
 logger.info 'Inventory and Infrastructure scheduled to run every 5 minutes'
 
 hak = Executables::Inventory.new
-scheduler_5m.every '30s' do
+scheduler_5m.cron '*/5 * * * *' do |job|
   processSignals
   hak.execute
   Executables::Infrastructure.new(scheduler_5m).execute

@@ -18,7 +18,6 @@ class InventoryCollector
 
   def initialize(infrastructure)
     @version = ''
-    @initial_run = true
     @infrastructure = infrastructure
     @local_inventory = MachineInventory.new(infrastructure)
     @vsphere_session = VSphere::VSphereSession.new.session
@@ -157,9 +156,6 @@ class InventoryCollector
 
     @local_inventory.save_a_copy_with_updates(time_to_query)
     logger.info "Recording inventory of #{@local_inventory.size} machines for #{@infrastructure.name} at #{time_to_query}"
-
-    @local_inventory.sync_missing if @initial_run
-    @initial_run = false
 
     logger.debug 'Generating vSphere session activity with currentTime request'
     VSphere.wrapped_vsphere_request { VSphere.session.serviceInstance.CurrentTime }

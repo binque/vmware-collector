@@ -44,10 +44,30 @@ class CollectorSyncronization
 
     @on_prem_connector = OnPremConnector.new
     get_infrastructures_from_api
-    collect_infrastructures
+    get_infrastructures_from_vsphere
     submit_infrastructures
+
+    get_machines_from_api
+    api_machines = Machine.where(status: 'api')
+
     collect_machine_inventory
-    sync_remote_ids
+    collected_vsphere_machines = Machine.ne(status: 'api')
+
+    Infrastructure.all.each do |infrastructure|
+      inventory = MachineInventory.new(infrastructure)
+      inventory.set_to_time(@inventory_at)
+      inventory.each do |platform_id, machine|
+        unless collected_vsphere_machines.detect{|m|
+                 m.infrastructure_platform_id.eql?(infrastructure.platform_id) and m.platform_id.eql?(machine.platform_id) }
+          logger.debug "\tFlagging #{machine.name} in #{infrastructure.name} for deletion"
+          machine.status = 'deleted'
+          machine.record_status = 'updated'
+          machine.save
+        end
+      end
+
+    end
+
     set_configured
   rescue StandardError => e
     logger.error e
@@ -58,8 +78,8 @@ class CollectorSyncronization
     end
   end
 
-  def collect_infrastructures
-    logger.info 'Collecting insfrastructures'
+  def get_infrastructures_from_vsphere
+    logger.info 'Collecting infrastructures from vsphere'
     infrastructures = Infrastructure.all
     InfrastructureCollector.new.run
     if Infrastructure.empty?
@@ -72,24 +92,58 @@ class CollectorSyncronization
   def get_infrastructures_from_api
     hyper_client = HyperClient.new
     local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
-    response = hyper_client.get(infrastructures_url)
+    logger.debug "retrieving infrastructures from #{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}"
+    response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
 
     if response.code == 200
       infs = JSON::parse(response.body)
 
       infs['embedded']['infrastructures'].each do |inf_json|
         if  Infrastructure.where(remote_id: inf_json['id']).empty?
-          puts "#{ inf_json['organization_id']} == #{@configuration[:on_prem_organization_id]}"
-          if inf_json['organization_id'] == @configuration[:on_prem_organization_id]
-            puts "\tCreating stub infrastructure"
-            infrastructure = Infrastructure.create({ name: inf_json['name'],
-                                                     remote_id: inf_json['id'],
-                                                     platform_id: inf_json['custom_id'],
-                                                     record_status: 'verified_create' })
-            PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
-                                    remote_id: inf_json['id'])
+          logger.debug "Creating infrastructure #{inf_json['name']} from retrieved API data"
+          infrastructure = Infrastructure.create({ name: inf_json['name'],
+                                                   remote_id: inf_json['id'],
+                                                   platform_id: inf_json['custom_id'],
+                                                   record_status: 'verified_create' })
+          PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
+                                  remote_id: inf_json['id'])
+        end
+      end
+    else
+      logger.error "Error retrieving infrastructures from API: #{response.code}"
+      logger.debug response.body
+    end
+  end
+
+  def get_machines_from_api
+    hyper_client = HyperClient.new
+    local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
+
+    Infrastructure.all.each do |infrastructure|
+      logger.debug "retrieving machines from #{machines_url}?infrastructure_id=#{infrastructure.remote_id}"
+      response = hyper_client.get("#{machines_url}?infrastructure_id=#{infrastructure.remote_id}")
+
+      if response.code == 200
+        machines = JSON::parse(response.body)
+
+        machines['embedded']['machines'].each do |machine_json|
+          if  Machine.where(remote_id: machine_json['id']).empty?
+            logger.debug "\tCreating machine #{machine_json['name']} from retrieved API data"
+            machine = Machine.create({ name: machine_json['name'],
+                                       remote_id: machine_json['id'],
+                                       platform_id: machine_json['custom_id'],
+                                       record_status: 'verified_create',
+                                       status: 'api',
+                                       infrastructure_platform_id: infrastructure.platform_id,
+                                       inventory_at: @inventory_at })
+            PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
+                                    machine: machine_json['custom_id'],
+                                    remote_id: machine_json['id'])
           end
         end
+      else
+        logger.error "Error retrieving machines from API: #{response.code}"
+        logger.debug response.body
       end
     end
 
@@ -126,7 +180,7 @@ class CollectorSyncronization
       rescue StandardError => e
         logger.error e.message
         logger.debug e.backtrace.join("\n")
-        infrastructure.disable
+#        infrastructure.disable
       end
     end
     machine_count = Machine.distinct(:platform_id).count
