@@ -132,6 +132,7 @@ class CollectorSyncronization
 
         machines['embedded']['machines'].each do |machine_json|
           if  Machine.where(remote_id: machine_json['id']).empty?
+<<<<<<< HEAD
             unless machine_json['status'].eql?('deleted')
               logger.debug "Creating machine #{machine_json['name']} from retrieved API data"
               puts "inf remote id: #{infrastructure.remote_id}"
@@ -144,6 +145,16 @@ class CollectorSyncronization
                                          infrastructure_platform_id: infrastructure.platform_id,
                                          inventory_at: @inventory_at })
             end
+=======
+            logger.debug "Creating machine #{machine_json['name']} from retrieved API data"
+            machine = Machine.create({ name: machine_json['name'],
+                                       remote_id: machine_json['id'],
+                                       platform_id: machine_json['custom_id'],
+                                       record_status: 'verified_create',
+                                       status: 'api',
+                                       infrastructure_platform_id: infrastructure.platform_id,
+                                       inventory_at: @inventory_at })
+>>>>>>> f5ef2b60b9f1eacfa9e2a5857bca62f382638755
           end
         end
       else
