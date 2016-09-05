@@ -81,7 +81,7 @@ spec:
     6fusion-app: vmwarecollector-master
   template:
     metadata:
-      name: 6fusion-vmwarecollector-metrics
+      name: 6fusion-vmwarecollector-master
       labels:
         6fusion-app: vmwarecollector-master
     spec:
