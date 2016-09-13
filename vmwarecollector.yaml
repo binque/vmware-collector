@@ -71,7 +71,7 @@ apiVersion: v1
 kind: ReplicationController
 metadata:
   name: 6fusion-vmwarecollector-master
-  namespace: 6fusion-vmware-collector5
+  namespace: 6fusion-vmware-collector
   labels:
     6fusion-app: vmwarecollector-master
 spec:
