@@ -136,8 +136,6 @@ class Machine
         logger.warn "#{vsphere_attr} is missing from the vSphere properties for machine: #{self.platform_id}"
       end
     end
-
-    self.record_status = 'to_be_deleted' if ( status == 'deleted' )
   end
 
   def assign_fake_disk
