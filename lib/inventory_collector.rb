@@ -150,6 +150,10 @@ class InventoryCollector
       #   collected_machine.cpu_speed_hz = cpu_hz
       # end
 
+      # Set 'to_be_deleted' here to avoid overriding with record_status 'incomplete'
+      # Status of 'incomplete' will merge attributes from previous collection to avoid validation issues when submitting (ex. presence of name)
+      collected_machine.record_status = 'to_be_deleted' if ( collected_machine.status == 'deleted' )
+
       # Add all machines to local inventory before save
       @local_inventory[collected_machine.platform_id] = collected_machine
     end
