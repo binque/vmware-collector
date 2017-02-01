@@ -252,7 +252,7 @@ module GlobalConfiguration
         puts "Reading in path: #{path}"
         if File.exists?(path)
           value = File.read("#{ENV['SECRETS_PATH']}/#{secret}/#{name_in_file}")
-          puts "read in #{value}, storing as " + "#{secret}_#{name_in_file}".gsub("-", "_").to_sym + "=>" + human_to_machine(value.chomp)
+          puts "read in #{value}, storing as " + "#{secret}_#{name_in_file}".gsub("-", "_") + "=>" + human_to_machine(value.chomp)
           store("#{secret}_#{name_in_file}".gsub("-", "_").to_sym, human_to_machine(value.chomp))
         end
       end
