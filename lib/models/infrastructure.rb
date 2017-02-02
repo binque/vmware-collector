@@ -211,7 +211,7 @@ class Infrastructure
   def networks_with_defaults
     ([ Network.new(name: 'default_wan', kind: 'WAN') ] |
       [ Network.new(name: 'default_san', kind: 'SAN') ] |
-     networks).map(:api_format)
+     networks).map(&:api_format)
   end
 
 end
