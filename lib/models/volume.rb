@@ -7,7 +7,7 @@ class Volume
   field :platform_id, type: String
   field :uuid, type: String
   field :name, type: String
-  field :ssd, type: Boolean, default: false
+  field :ssd, type: Boolean
   field :storage_bytes, type: Integer, default: 0
   field :volume_type, type: String
   field :accessible, type: String
@@ -25,7 +25,7 @@ class Volume
 
   def api_format
     {name: name,
-     ssd: ssd,
+     ssd: ssd || false,
      storage_bytes: storage_bytes,
      volume_type: volume_type,
      accessible: accessible,
