@@ -203,8 +203,15 @@ class Infrastructure
       },
         # Nested models
         hosts: hosts.map(&:api_format),
-        networks: networks.map(&:api_format),
+        networks: networks_with_defaults,
         volumes: volumes.map(&:api_format)
     }
   end
+
+  def networks_with_defaults
+    ([ Network.new(name: 'default_wan', kind: 'WAN') ] |
+      [ Network.new(name: 'default_san', kind: 'SAN') ] |
+     networks).map(:api_format)
+  end
+
 end
