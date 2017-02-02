@@ -29,4 +29,5 @@ class Network
     else
       ENV['DEFAULT_LAN_IO'] || 100000000000
     end
+  end
 end
