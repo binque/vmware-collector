@@ -18,7 +18,8 @@ class Infrastructure
   field :remote_id, type: String
   field :name, type: String
   field :record_status, type: String
-  field :tags, type: String
+  # Tags are currently static defaults only, not updated during collection
+  field :tags, type: Array, default: ['platform:vmware', 'collector:vmware']
 
   # TODO: Check if this is required by the inventory collector
   field :enabled, type: Boolean, default: true
@@ -113,7 +114,6 @@ class Infrastructure
     response = nil
     begin
       logger.info "Submitting #{name} to API for creation in OnPrem"
-      self.tags = name if tags.blank?
       response = hyper_client.post(infrastructures_post_url, api_format)
       if response && response.code == 200
         self.remote_id = response.json['id']
@@ -145,7 +145,7 @@ class Infrastructure
     end
     self
   end
-  
+
   def submit_update
     logger.info "Updating infrastructure #{name} in OnPrem API"
     begin
@@ -184,7 +184,7 @@ class Infrastructure
     {
       name: name,
       custom_id: platform_id,
-        tags: [tags],
+        tags: tags,
         summary: {
             # Counts
             hosts: hosts.size,
