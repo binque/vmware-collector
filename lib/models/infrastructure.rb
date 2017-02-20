@@ -184,27 +184,28 @@ class Infrastructure
     {
       name: name,
       custom_id: platform_id,
-        tags: tags,
-        summary: {
-            # Counts
-            hosts: hosts.size,
-            networks: networks.size,
-            volumes: volumes.size,
+      tags: tags,
+      summary: {
+        # Counts
+        hosts: hosts.size,
+        networks: networks.size,
+        volumes: volumes.size,
 
-            # Sums
-            sockets: total_sockets,
-            cores: total_cpu_cores,
-            threads: total_threads,
-            speed_mhz: total_cpu_mhz,
-            memory_bytes: total_memory,
-            storage_bytes: total_storage_bytes,
-            lan_bandwidth_mbits: total_lan_bandwidth_mbits,
-            wan_bandwidth_mbits: 0
+        # Sums
+        sockets: total_sockets,
+        cores: total_cpu_cores,
+        threads: total_threads,
+        speed_mhz: total_cpu_mhz,
+        memory_bytes: total_memory,
+        storage_bytes: total_storage_bytes,
+        lan_bandwidth_mbits: total_lan_bandwidth_mbits,
+        wan_bandwidth_mbits: 0
       },
-        # Nested models
-        hosts: hosts.map(&:api_format),
-        networks: networks_with_defaults,
-        volumes: volumes.map(&:api_format)
+
+      # Nested models
+      hosts: hosts.map(&:api_format),
+      networks: networks_with_defaults,
+      volumes: volumes.map(&:api_format)
     }
   end
 
