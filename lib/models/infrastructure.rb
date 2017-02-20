@@ -19,7 +19,7 @@ class Infrastructure
   field :name, type: String
   field :record_status, type: String
   # Tags are currently static defaults only, not updated during collection
-  field :tags, type: Array, default: ['platform:vmware', 'collector:vmware']
+  field :tags, type: Array, default: ['platform:VMware', 'collector:VMware']
 
   # TODO: Check if this is required by the inventory collector
   field :enabled, type: Boolean, default: true
