@@ -73,8 +73,8 @@ class InventoryCollector
               # machine.cpu_speed_hz = @infrastructure.cpu_speed_for(machine.platform_id)
               machine.assign_fake_disk if machine.disks.empty?
               machine.assign_fake_nic if machine.nics.empty?
-              machine.tags << 'type: virtual machine'
-              machine.tags << 'platform: vmware'
+              machine.tags << 'type:virtual machine'
+              machine.tags << 'platform:VMware'
               if machine.record_status == 'incomplete'
                 if @local_inventory.key?(machine.platform_id)
                   previous_version = @local_inventory[machine.platform_id]
