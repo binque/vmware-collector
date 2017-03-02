@@ -1,0 +1,6 @@
+production:
+  clients:
+    default:
+      database: '6fusion_meter'
+      hosts:
+        - <%= ENV['MONGODB_SERVICE_HOST'] %>:<%= ENV['MONGODB_SERVICE_PORT'] %>
