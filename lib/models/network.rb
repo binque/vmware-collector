@@ -17,7 +17,7 @@ class Network
     {
       name: name,
       kind: kind,
-      speed_bits_per_second: speed_or_default
+      speed_bits_per_second: speed_or_default.to_i
     }
   end
 
