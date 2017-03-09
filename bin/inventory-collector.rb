@@ -39,16 +39,17 @@ scheduler_5m.cron '*/5 * * * *' do |job|
   Executables::Infrastructure.new(scheduler_5m).execute
 end
 
-logger.info 'Metrics missing locked cleaning process scheduled to run every 15 minutes'
-scheduler_15m.every '15m' do
-  processSignals
-  Executables::MissingReadingsCleaner.new(scheduler_15m).execute
-end
+# logger.info 'Metrics missing locked cleaning process scheduled to run every 15 minutes'
+# scheduler_15m.every '15m' do
+#   processSignals
+#   Executables::MissingReadingsCleaner.new(scheduler_15m).execute
+# end
 
-logger.info 'Metrics missing readings scheduled to run every 30 minutes'
-scheduler_30m.every '30m' do
-  processSignals
-  Executables::MissingReadings.new(scheduler_30m).execute
-end
+# logger.info 'Metrics missing readings scheduled to run every 30 minutes'
+# scheduler_30m.every '30m' do
+#   processSignals
+#   Executables::MissingReadings.new(scheduler_30m).execute
+# end
 
-[scheduler_30s, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)
+#[scheduler_30s, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)
+[scheduler_30s, scheduler_5m].map(&:join)
