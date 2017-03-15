@@ -2,7 +2,6 @@ require 'logger' # not to be confused with our logging.rb module
 require 'set'
 require 'singleton'
 require 'yaml'
-require 'mongo_connection'
 
 module GlobalConfiguration
   DEFAULT_EMPTY_VALUE = 'not set'.freeze
@@ -13,7 +12,6 @@ module GlobalConfiguration
 
   class GlobalConfig < Hash
     include Singleton
-    include MongoConnection
 
     def initialize
       super
@@ -40,21 +38,11 @@ module GlobalConfiguration
       # Pull in dev/test configs
       process_config_overrides
 
-      # Before we attempt to access the MeterConfiguration collection, we need to initialize mongo
-      #  in such a way that it doesn't rely on the Configuration module
-      #  (i.e., break the circular relationship between the modules)
-
       # !! dynamically base this off vsphere_session_limit
       # store in such a way that it can be merged with yaml overrides
       store(:mongoid_options, pool_size: 20)
       # Update values with configuration from mongo
       # Original configuration, uncomment it to make it work on the container
-      initialize_mongo_connection(mongoid_database: self[:mongoid_database],
-                                  mongoid_hosts: self[:mongoid_hosts], # ["#{ENV['MONGO_PORT_27017_TCP_ADDR']}:#{ENV['MONGO_PORT_27017_TCP_PORT']}"]
-                                  mongoid_options: self[:mongoid_options],
-                                  mongoid_log_level: self[:mongoid_log_level])
-      # Comment the following line if you are going to run it on container
-      # initialize_mongo_connection({:mongoid_database=>"6fusion_meter_development", :mongoid_hosts=>["localhost:27017"], :mongoid_options=>{:pool_size=>20}, :mongoid_log_level=>1})
 
       @logger.level = fetch(:on_prem_log_level)
       Logging::MeterLog.instance.logger.level = fetch(:on_prem_log_level)
