@@ -158,7 +158,7 @@ module GlobalConfiguration
                      vsphere_user: DEFAULT_EMPTY_VALUE,
                      vsphere_password: DEFAULT_EMPTY_VALUE,
                      vsphere_host: DEFAULT_EMPTY_VALUE,
-                     vsphere_readings_batch_size: 500,
+                     vsphere_readings_batch_size: 60,
                      vsphere_ignore_ssl_errors: false,
                      vsphere_debug: false,
                      on_prem_api_format: 'json',
