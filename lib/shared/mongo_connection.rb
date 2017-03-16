@@ -13,10 +13,11 @@ module MongoConnection
     load_params = { sessions:
                      { default:
                          { database: '6fusion_meter',
-                           hosts: [ "#{ENV['MONGODB_SERVICE_HOST']}:#{ENV['MONGODB_SERVICE_POwRT']}" ] }
+                           hosts: [ "#{ENV['MONGODB_SERVICE_HOST']}:#{ENV['MONGODB_SERVICE_POwRT']}" ],
+                           options: {
+                             pool_size: 20 }
+                         }
                      },
-                    options: {
-                      pool_size: 20 }
                   }
 
     Mongoid::Config.load_configuration(load_params)

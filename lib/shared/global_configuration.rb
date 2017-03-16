@@ -226,7 +226,6 @@ module GlobalConfiguration
     # end
 
     def load_secrets
-      puts "loading secrets!"
       vsphere_secrets = %w(host password user debug ignore-ssl-errors readings-batch-size)
       on_prem_secrets = %w(api-host log-level oauth-endpoint api-endpoint organization-id
                            registration-date machines-by-inv-timestamp inventoried-limit proxy-host proxy-port proxy-user
@@ -239,10 +238,8 @@ module GlobalConfiguration
     def store_secrets_for(keys, secret)
       keys.each do |name_in_file|
         path = "/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}"
-        puts "loading path #{path}"
         if File.exists?(path)
           value = File.read("/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}")
-          puts "value for key: #{value}"
           store("#{secret}_#{name_in_file}".gsub("-", "_").to_sym, human_to_machine(value.chomp))
         end
       end
