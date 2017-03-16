@@ -28,6 +28,7 @@ module GlobalConfiguration
 
       # Initialize iwth default values
       merge!(defaults)
+      load_secrets
       # Process environment (e.g., mongo info could be passed in through ENV)
       #  Since environment overrides everything, we "freeze" these values so they won't
       #  get updated by subsequent configuration sources
@@ -236,9 +237,9 @@ module GlobalConfiguration
 
     def store_secrets_for(keys, secret)
       keys.each do |name_in_file|
-        path = "#{ENV['SECRETS_PATH']}/#{secret}/#{name_in_file}"
+        path = "/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}"
         if File.exists?(path)
-          value = File.read("#{ENV['SECRETS_PATH']}/#{secret}/#{name_in_file}")
+          value = File.read("/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}")
           store("#{secret}_#{name_in_file}".gsub("-", "_").to_sym, human_to_machine(value.chomp))
         end
       end
