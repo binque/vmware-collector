@@ -127,7 +127,7 @@ class MetricsCollector
   def custom_retrieve_stats(objects, metrics, opts = {})
     realtime = false
 
-    instances = ['*']
+    # instances = ['*']
     metric_ids = []
 
     metrics.each do |metric|

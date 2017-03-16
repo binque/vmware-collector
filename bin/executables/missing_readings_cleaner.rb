@@ -9,7 +9,7 @@ module Executables
       logger.info 'Executing cleanning process'
 
       begin
-        start_time = Time.now
+        # start_time = Time.now
         @missing_readings_handler.unlock_old_inventory_timestamps
       rescue StandardError => e
         logger.fatal "Encountered unhandled exception: #{e.message}."

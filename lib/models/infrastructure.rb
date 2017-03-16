@@ -25,7 +25,7 @@ class Infrastructure
   field :enabled, type: Boolean, default: true
   field :status, type: String, default: 'online'
   field :vcenter_server, type: String # !! hmmmm
-  field :release_version, type: String, default: 'alpha'
+  # field :release_version, type: String, default: 'alpha'
 
   embeds_many :hosts
   embeds_many :networks
@@ -119,7 +119,7 @@ class Infrastructure
         self.remote_id = response.json['id']
         # TODO: see if we need this at this place
         self.enabled = 'true'
-        self.release_version = configuration[:on_prem_collector_version]
+        # self.release_version = configuration[:on_prem_collector_version]
 
         update_attribute(:record_status, 'verified_create') # record_status will be ignored by local_inventory class, so we need to update it "manually"
       else

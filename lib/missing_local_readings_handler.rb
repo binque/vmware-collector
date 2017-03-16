@@ -101,7 +101,7 @@ class MissingLocalReadingsHandler
       # Remove when _id is nil, case where timestamp had all readings
       missing_machine_morefs_by_timestamp = grouped_readings_by_timestamp.reject { |data| !data['_id'] }
       missing_machine_morefs_by_timestamp.each do |missing_hash|
-        time = missing_hash['_id']
+        # time = missing_hash['_id']
         data = missing_hash['data']
 
         logger.info("Filling in missing readings for #{data.size} machines for time: #{inv_timestamps[0].inventory_at}")

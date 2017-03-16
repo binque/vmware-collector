@@ -31,16 +31,16 @@ module GlobalConfiguration
       # Process environment (e.g., mongo info could be passed in through ENV)
       #  Since environment overrides everything, we "freeze" these values so they won't
       #  get updated by subsequent configuration sources
-      (keys + aliases.keys).each do |opt|
-        freeze(opt, ENV[opt.to_s.upcase]) if ENV[opt.to_s.upcase].present?
-      end
+      # (keys + aliases.keys).each do |opt|
+      #   freeze(opt, ENV[opt.to_s.upcase]) if ENV[opt.to_s.upcase].present?
+      # end
 
       # Pull in dev/test configs
-      process_config_overrides
+      # process_config_overrides
 
       # !! dynamically base this off vsphere_session_limit
       # store in such a way that it can be merged with yaml overrides
-      store(:mongoid_options, pool_size: 20)
+      # store(:mongoid_options, pool_size: 20)
       # Update values with configuration from mongo
       # Original configuration, uncomment it to make it work on the container
 
@@ -99,31 +99,30 @@ module GlobalConfiguration
 
     def aliases
       @aliases ||= {
-          mongo_port: :mongoid_hosts,
+          # mongo_port: :mongoid_hosts,
           log_level: :on_prem_log_level
       }
     end
 
     def store_hooks
       @store_hooks ||= {
-          mongo_port: ->(v) { v.split('//').last }, # chop off leading tcp:// docker injects
+          # mongo_port: ->(v) { v.split('//').last }, # chop off leading tcp:// docker injects
           encryption_secret: ->(v) { @encryption_secret = v } # analog to fetch hook below to update memoized value
       }
     end
 
-    def get_an_infrastructure_id(*)
-      infrastructure = Infrastructure.enabled.first || Infrastructure.first
-      infrastructure ? infrastructure.remote_id : nil
-    end
+    # def get_an_infrastructure_id(*)
+    #   infrastructure = Infrastructure.enabled.first || Infrastructure.first
+    #   infrastructure ? infrastructure.remote_id : nil
+    # end
 
     def fetch_hooks
       @fetch_hooks ||= {
-          mongoid_database: method(:database_name),
           on_prem_proxy: method(:build_proxy_string),
           on_prem_proxy_port: method(:proxy_port_unless_provided),
           on_prem_api_endpoint: method(:prepend_on_prem_api_host),
           on_prem_oauth_endpoint: method(:prepend_on_prem_api_host),
-          on_prem_infrastructure_id: method(:get_an_infrastructure_id),
+          # on_prem_infrastructure_id: method(:get_an_infrastructure_id),
           mongoid_log_level: method(:infer_mongoid_log_level)
       }
     end
@@ -140,7 +139,8 @@ module GlobalConfiguration
     # "on_prem" should be included in on_prem kubernetes secret
     # "vsphere" should be included in vsphere kubernetes secret
     def defaults
-      @defaults ||= {config_root: 'config',
+      @defaults ||= {
+                     # config_root: 'config',
                      data_center: DEFAULT_EMPTY_VALUE,
                      vsphere_session_limit: 10,
                      vsphere_user: DEFAULT_EMPTY_VALUE,
@@ -151,19 +151,19 @@ module GlobalConfiguration
                      vsphere_debug: false,
                      on_prem_api_format: 'json',
                      on_prem_api_host: DEFAULT_EMPTY_VALUE,
-                     on_prem_login_email: DEFAULT_EMPTY_VALUE,
-                     on_prem_login_password: DEFAULT_EMPTY_VALUE,
+                     # on_prem_login_email: DEFAULT_EMPTY_VALUE,
+                     # on_prem_login_password: DEFAULT_EMPTY_VALUE,
                      on_prem_batch_size: 500,
                      on_prem_api_endpoint: DEFAULT_EMPTY_VALUE,
-                     on_prem_oauth_endpoint: DEFAULT_EMPTY_VALUE,
-                     on_prem_api_scope: DEFAULT_EMPTY_VALUE,
+                     # on_prem_oauth_endpoint: DEFAULT_EMPTY_VALUE,
+                     # on_prem_api_scope: DEFAULT_EMPTY_VALUE,
                      on_prem_api_threads: 2,
-                     on_prem_application_id: DEFAULT_EMPTY_VALUE,
-                     on_prem_application_secret: DEFAULT_EMPTY_VALUE,
+                     # on_prem_application_id: DEFAULT_EMPTY_VALUE,
+                     # on_prem_application_secret: DEFAULT_EMPTY_VALUE,
                      on_prem_collector_version: DEFAULT_EMPTY_VALUE,
                      on_prem_organization_id: DEFAULT_EMPTY_VALUE,
-                     on_prem_organization_name: DEFAULT_EMPTY_VALUE,
-                     on_prem_meter_id: DEFAULT_EMPTY_VALUE,
+                     # on_prem_organization_name: DEFAULT_EMPTY_VALUE,
+                     # on_prem_meter_id: DEFAULT_EMPTY_VALUE,
                      on_prem_oauth_token: DEFAULT_EMPTY_VALUE,
                      on_prem_refresh_token: DEFAULT_EMPTY_VALUE,
                      on_prem_proxy_host: DEFAULT_EMPTY_VALUE,
@@ -173,14 +173,15 @@ module GlobalConfiguration
                      on_prem_machines_by_inv_timestamp: '500',
                      on_prem_inventoried_limit: 10,
                      on_prem_log_level: Logger::DEBUG,
-                     mongoid_log_level: Logger::INFO,
-                     mongoid_hosts: 'localhost:27017',
-                     mongoid_database: '6fusion_collector',
-                     mongoid_port: DEFAULT_EMPTY_VALUE,
+                     # mongoid_log_level: Logger::INFO,
+                     # mongoid_hosts: 'localhost:27017',
+                     # mongoid_database: '6fusion_collector',
+                     # mongoid_port: DEFAULT_EMPTY_VALUE,
                      verified_api_connection: false,
                      verified_vsphere_connection: true,
-                     container_namespace: '6fusion',
-                     container_repository: 'vmware-collector'}
+                     # container_namespace: '6fusion',
+                     # container_repository: 'vmware-collector'
+      }
     end
 
     # freeze + the updated store allow setting a value such that it can't be overridden
@@ -190,45 +191,44 @@ module GlobalConfiguration
       super(key, value) unless @frozen_keys.include?(key)
     end
 
-    def config_root
-      pwd = Dir.pwd
-      @config_root ||= begin
-        if File.readable?("#{pwd}/config/#{@environment}/inventory_mongoid_container.yml")
-          "#{pwd}/config/#{@environment}"
-        elsif File.readable?("config/#{@environment}/inventory_mongoid_container.yml")
-          "config/#{@environment}"
-        else
-          'config'
-        end
-      end
-    end
+    # def config_root
+    #   pwd = Dir.pwd
+    #   @config_root ||= begin
+    #     if File.readable?("#{pwd}/config/#{@environment}/inventory_mongoid_container.yml")
+    #       "#{pwd}/config/#{@environment}"
+    #     elsif File.readable?("config/#{@environment}/inventory_mongoid_container.yml")
+    #       "config/#{@environment}"
+    #     else
+    #       'config'
+    #     end
+    #   end
+    # end
 
-    def process_config_overrides
-      process_yaml
-      load_secrets
-    end
+    # def process_config_overrides
+    #   process_yaml
+    #   load_secrets
+    # end
 
-    def process_yaml
-      file = "#{config_root}/#{ENV['CONTAINER']}_mongoid_container.yml" # "/config/development/#{filename}.yml" #!!! Change to this if you are gonna run it out of container
-      if File.readable?(file)
-        @logger.debug "Loading configuration overrides from #{file}"
-        begin
-          config = YAML.load(ERB.new(File.read(file)).result)[@environment]['sessions']['default']
-          config.each { |key, value| store("mongoid_#{key}".to_sym, human_to_machine(value)) }
-        rescue StandardError => e
-          @logger.warn "Could not parse configuration file: #{file}"
-          @logger.debug e
-          @logger.debug File.read(file)
-        end
-      end
-    end
+    # def process_yaml
+    #   file = "#{config_root}/#{ENV['CONTAINER']}_mongoid_container.yml" # "/config/development/#{filename}.yml" #!!! Change to this if you are gonna run it out of container
+    #   if File.readable?(file)
+    #     @logger.debug "Loading configuration overrides from #{file}"
+    #     begin
+    #       config = YAML.load(ERB.new(File.read(file)).result)[@environment]['sessions']['default']
+    #       config.each { |key, value| store("mongoid_#{key}".to_sym, human_to_machine(value)) }
+    #     rescue StandardError => e
+    #       @logger.warn "Could not parse configuration file: #{file}"
+    #       @logger.debug e
+    #       @logger.debug File.read(file)
+    #     end
+    #   end
+    # end
 
     def load_secrets
-      vsphere_secrets = %w(host password user debug ignore-ssl-errors)
-      on_prem_secrets = %w(api-host log-level oauth-endpoint api-endpoint organization-id api-scope collector-version
+      vsphere_secrets = %w(host password user debug ignore-ssl-errors readings-batch-size)
+      on_prem_secrets = %w(api-host log-level oauth-endpoint api-endpoint organization-id
                            registration-date machines-by-inv-timestamp inventoried-limit proxy-host proxy-port proxy-user
-                           proxy-password oauth-token refresh-token login-email login-password batch-size application-id
-                           application-secret organization-name)
+                           proxy-password oauth-token refresh-token batch-size)
 
       store_secrets_for(vsphere_secrets, "vsphere")
       store_secrets_for(on_prem_secrets, "on-prem")
@@ -285,18 +285,18 @@ module GlobalConfiguration
       proxy_string
     end
 
-    def database_name(*)
-      case ENV['METER_ENV']
-        when 'production' then
-          '6fusion_meter'
-        when 'staging' then
-          '6fusion_meter_staging'
-        when 'test' then
-          '6fusion_meter_testing'
-        else
-          '6fusion_meter_development'
-      end
-    end
+    # def database_name(*)
+    #   case ENV['METER_ENV']
+    #     when 'production' then
+    #       '6fusion_meter'
+    #     when 'staging' then
+    #       '6fusion_meter_staging'
+    #     when 'test' then
+    #       '6fusion_meter_testing'
+    #     else
+    #       '6fusion_meter_development'
+    #   end
+    # end
 
     def infer_mongoid_log_level(*)
       # Mongoid should only be bumped up to debug if it's been explicitly set. I.e., don't assume that because the

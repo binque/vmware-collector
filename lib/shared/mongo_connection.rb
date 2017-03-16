@@ -10,16 +10,19 @@ end
 module MongoConnection
   def initialize_mongo_connection
     STDOUT.sync = true # disable output buffering; makes it hard to follow docker logs
-    load_params = {sessions: {default: {
-        database: '6fusion_meter',
-        hosts: [ "#{ENV['MONGODB_SERVICE_HOST']}:#{ENV['MONGODB_SERVICE_PORT']}" ] }}}
+    load_params = { sessions:
+                     { default:
+                         { database: '6fusion_meter',
+                           hosts: [ "#{ENV['MONGODB_SERVICE_HOST']}:#{ENV['MONGODB_SERVICE_POwRT']}" ] }
+                     },
+                    options: {
+                      pool_size: 20 }
+                  }
 
     Mongoid::Config.load_configuration(load_params)
 
 #    Mongoid.logger.level = mongoid_config[:mongoid_log_level]
 #    Moped.logger.level   = Mongoid.logger.level
-
-    # !! Mongoid.logger = Logging::MeterLog.instance.logger hmmmm
 
     # Test to verify we can connect
     begin

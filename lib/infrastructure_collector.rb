@@ -232,7 +232,7 @@ class InfrastructureCollector
   end
 
   def data_centers_filter_spec
-    recurse_folders = RbVmomi::VIM.SelectionSpec(name: 'ParentFolder')
+    # recurse_folders = RbVmomi::VIM.SelectionSpec(name: 'ParentFolder')
 
     # !! can you have datacenters under datacenters?
     # This code gives objects all the way from root to the VM

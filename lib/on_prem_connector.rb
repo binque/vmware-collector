@@ -404,9 +404,9 @@ class OnPremConnector
     deleted_disk = disk.submit_delete(submit_url)
     if deleted_disk.record_status == 'verified_delete' || deleted_disk.record_status == 'unverified_delete'
       deleted_disk.save # Update status in mongo
-      disk_machine = disk.machine
-      disk_prid = @local_platform_remote_id_inventory["i:#{disk_machine.infrastructure_platform_id}/m:#{disk_machine.platform_id}/d:#{disk.platform_id}"]
-      disk_prid.delete if disk_prid
+      #disk_machine = disk.machine
+      #disk_prid = @local_platform_remote_id_inventory["i:#{disk_machine.infrastructure_platform_id}/m:#{disk_machine.platform_id}/d:#{disk.platform_id}"]
+      #disk_prid.delete if disk_prid
       @local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
     else
       logger.error "Error deleting disk: platform_id = #{disk.platform_id}, mongo _id = #{disk.id}, submit_url = #{submit_url}"
@@ -420,9 +420,9 @@ class OnPremConnector
     deleted_nic = nic.submit_delete(submit_url)
     if deleted_nic.record_status == 'verified_delete' || deleted_nic.record_status == 'unverified_delete'
       deleted_nic.save # Update status in mongo
-      nic_machine = nic.machine
-      nic_prid = @local_platform_remote_id_inventory["i:#{nic_machine.infrastructure_platform_id}/m:#{nic_machine.platform_id}/n:#{nic.platform_id}"]
-      nic_prid.delete if nic_prid
+      # nic_machine = nic.machine
+      # nic_prid = @local_platform_remote_id_inventory["i:#{nic_machine.infrastructure_platform_id}/m:#{nic_machine.platform_id}/n:#{nic.platform_id}"]
+      #nic_prid.delete if nic_prid
       @local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
     else
       logger.error "Error deleting NIC: platform_id = #{nic.platform_id}, platform _id = #{nic.id}, submit_url = #{submit_url}"
@@ -665,7 +665,7 @@ class OnPremConnector
   end
 
   def verify_and_submit_nics_updates(updated_machine, _api_machine)
-    to_be_created = (updated_machine.nics.map &:api_format).select { |n| n[:id].nil? && n[:name].present? }
+    to_be_created = (updated_machine.nics.map(&:api_format)).select { |n| n[:id].nil? && n[:name].present? }
     create_nics(to_be_created, updated_machine) if to_be_created.present?
   end
 
@@ -685,11 +685,11 @@ class OnPremConnector
   end
 
   def verify_and_submit_disks_updates(updated_machine, api_machine)
-    local_disks = (updated_machine.disks.map &:api_format).select { |n| n if n[:name].present? }
+    local_disks = (updated_machine.disks.map(&:api_format)).select { |n| n if n[:name].present? }
     remote_disks = api_machine['embedded']['disks'].map { |d| {id: d['id'], name: d['name'], storage_bytes: d['storage_bytes'], kind: 'disk'} }
     local_disks_ids = local_disks.map { |n| n[:id] if !n[:name].nil? && n[:id].present? }.compact
     remote_disks_ids = remote_disks.map { |n| n[:id] }
-    to_be_created = (updated_machine.disks.map &:api_format).select { |n| n[:id].nil? && n[:name].present? }
+    to_be_created = (updated_machine.disks.map(&:api_format)).select { |n| n[:id].nil? && n[:name].present? }
     create_disks(to_be_created, updated_machine) if to_be_created.present?
     if local_disks_ids.sort == remote_disks_ids.sort
       disks_to_update = (local_disks - remote_disks).select { |n| n if n[:id].present? }
@@ -732,7 +732,7 @@ class OnPremConnector
 
   def machine_exists?(machine_reading)
     machine_platform_id = machine_reading.id[:machine_platform_id]
-    deleted_machines = Machine.where(record_status: 'deleted').map &:platform_id
+    deleted_machines = Machine.where(record_status: 'deleted').map(&:platform_id)
     !deleted_machines.include?(machine_platform_id)
   end
 end

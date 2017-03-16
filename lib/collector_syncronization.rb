@@ -95,7 +95,7 @@ class CollectorSyncronization
 
   def get_infrastructures_from_api
     hyper_client = HyperClient.new
-    local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
+    # local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
     logger.debug "retrieving infrastructures from #{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}"
     response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
 
@@ -105,10 +105,10 @@ class CollectorSyncronization
       infs['embedded']['infrastructures'].each do |inf_json|
         if  Infrastructure.where(remote_id: inf_json['id']).empty?
           logger.debug "Creating infrastructure #{inf_json['name']} from retrieved API data"
-          infrastructure = Infrastructure.create({ name: inf_json['name'],
-                                                   remote_id: inf_json['id'],
-                                                   platform_id: inf_json['custom_id'],
-                                                   record_status: 'verified_create' })
+          Infrastructure.create({ name: inf_json['name'],
+                                  remote_id: inf_json['id'],
+                                  platform_id: inf_json['custom_id'],
+                                  record_status: 'verified_create' })
           PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
                                   remote_id: inf_json['id'])
         end
@@ -121,7 +121,7 @@ class CollectorSyncronization
 
   def get_machines_from_api
     hyper_client = HyperClient.new
-    local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
+    # local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
 
     Infrastructure.all.each do |infrastructure|
       logger.debug "retrieving machines from #{machines_url}?infrastructure_id=#{infrastructure.remote_id}"
@@ -135,14 +135,14 @@ class CollectorSyncronization
             unless machine_json['status'].eql?('deleted')
               logger.debug "Creating machine #{machine_json['name']} from retrieved API data"
               puts "inf remote id: #{infrastructure.remote_id}"
-              machine = Machine.create({ name: machine_json['name'],
-                                         remote_id: machine_json['id'],
-                                         platform_id: machine_json['custom_id'],
-                                         record_status: 'verified_create',
-                                         status: 'api',
-                                         infrastructure_remote_id: infrastructure.remote_id,
-                                         infrastructure_platform_id: infrastructure.platform_id,
-                                         inventory_at: @inventory_at })
+              Machine.create({ name: machine_json['name'],
+                               remote_id: machine_json['id'],
+                               platform_id: machine_json['custom_id'],
+                               record_status: 'verified_create',
+                               status: 'api',
+                               infrastructure_remote_id: infrastructure.remote_id,
+                               infrastructure_platform_id: infrastructure.platform_id,
+                               inventory_at: @inventory_at })
             end
           end
         end

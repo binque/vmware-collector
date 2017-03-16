@@ -71,7 +71,7 @@ module OnPremUrlGenerator
 
   def machine_url(machine)
     logger.info "@local_platform_remote_id_inventory => #{@local_platform_remote_id_inventory} \n\n MACHINE #{machine.inspect}"
-    infrastructure_prid = @local_platform_remote_id_inventory["i:#{machine.infrastructure_platform_id}"]
+    # infrastructure_prid = @local_platform_remote_id_inventory["i:#{machine.infrastructure_platform_id}"]
     machine_prid = @local_platform_remote_id_inventory["i:#{machine.infrastructure_platform_id}/m:#{machine.platform_id}"]
     raise "Could construct API url for #{machine.platform_id}" unless machine_prid
     raise "No remote_id for machine: #{machine.platform_id}" unless machine_prid.remote_id

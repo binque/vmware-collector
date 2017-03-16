@@ -61,7 +61,7 @@ module Executables
             logger.debug "Running ID => #{it._id} ==#{it.inventory_at} with inventory #{it.machine_inventory}"
             current_collector.run(it, it.machine_inventory)
           end
-        rescue Timeout::Error => e
+        rescue Timeout::Error
           logger.error "Unable to collect consumption metrics for inventoried machines for time #{timestamp.inventory_at}. (timed out)"
         end
       end
