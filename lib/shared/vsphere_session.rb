@@ -81,11 +81,12 @@ module VSphere
     def get_vsphere_session
       Timeout.timeout(10) do
         puts "connecting with"
-        p { host: configuration[:vsphere_host],
-            user: configuration[:vsphere_user],
-            password: configuration[:vsphere_password],
-            insecure: configuration[:vsphere_ignore_ssl_errors],
-            debug: configuration[:vsphere_debug] }
+        h =  { host: configuration[:vsphere_host],
+               user: configuration[:vsphere_user],
+               password: configuration[:vsphere_password],
+               insecure: configuration[:vsphere_ignore_ssl_errors],
+               debug: configuration[:vsphere_debug] }
+        p h
 
         RbVmomi::VIM.connect(host: configuration[:vsphere_host],
                              user: configuration[:vsphere_user],
