@@ -238,8 +238,10 @@ module GlobalConfiguration
     def store_secrets_for(keys, secret)
       keys.each do |name_in_file|
         path = "/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}"
+        STDERR.puts "loading path #{path}"
         if File.exists?(path)
           value = File.read("/var/run/secrets/vmwarecollector/#{secret}/#{name_in_file}")
+          STDERR.puts "value for key: #{value}"
           store("#{secret}_#{name_in_file}".gsub("-", "_").to_sym, human_to_machine(value.chomp))
         end
       end
