@@ -103,14 +103,17 @@ class CollectorSyncronization
       infs = JSON::parse(response.body)
 
       infs['embedded']['infrastructures'].each do |inf_json|
-        if  Infrastructure.where(remote_id: inf_json['id']).empty?
-          logger.debug "Creating infrastructure #{inf_json['name']} from retrieved API data"
-          Infrastructure.create({ name: inf_json['name'],
-                                  remote_id: inf_json['id'],
-                                  platform_id: inf_json['custom_id'],
-                                  record_status: 'verified_create' })
-          PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
-                                  remote_id: inf_json['id'])
+        # If this infrastructure got init
+        if Infrastructure.where(platform_id: inf_json['custom_id'])
+          logger.debug "Syncing infrastructure #{inf_json['name']} from API"
+          #   Infrastructure.create({ name: inf_json['name'],
+          #                           remote_id: inf_json['id'],
+          #                           platform_id: inf_json['custom_id'],
+          #                           record_status: 'verified_create' })
+          if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
+            PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
+                                    remote_id: inf_json['id'])
+          end
         end
       end
     else

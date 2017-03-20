@@ -259,6 +259,7 @@ module RbVmomiExtensions
         end
       end
       attributes[:platform_id] = self.moref
+#      attributes[:platform_id] = self.repond_to?(:instanceUuid) ? self.instanceUuid : self.moref
       attributes
     end
 
