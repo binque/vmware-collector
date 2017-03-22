@@ -218,25 +218,29 @@ module RbVmomiExtensions
       logger = nil
 
       self.changeSet.each do |cs|
-        cs.val.each do |nic|
-          nic_attrs = {}
-          nic_attribute_map.each do |k,v|
-            begin
-              if ( k == :speed_mbits )
-                nic_attrs[k] = nic.linkSpeed ? nic.linkSpeed.speedMb : 0  # linkSpeed is actually a PhysicalNicLinkInfo object, and will be nil if the link is down
-              else
-                nic_attrs[k] = nic.send(v)
+        if cs.val
+          cs.val.each do |nic|
+            nic_attrs = {}
+            nic_attribute_map.each do |k,v|
+              begin
+                if ( k == :speed_mbits )
+                  nic_attrs[k] = nic.linkSpeed ? nic.linkSpeed.speedMb : 0  # linkSpeed is actually a PhysicalNicLinkInfo object, and will be nil if the link is down
+                else
+                  nic_attrs[k] = nic.send(v)
+                end
+              rescue StandardError => e
+                logger ||= Logging::MeterLog.instance.logger
+                logger.warn e.message
+                logger.debug e.backtrace.join("\n")
               end
-            rescue StandardError => e
-              logger ||= Logging::MeterLog.instance.logger
-              logger.warn e.message
-              logger.debug e.backtrace.join("\n")
             end
+            nics << nic_attrs
           end
-          nics << nic_attrs
         end
+      else
+        puts "Empty cs.val for NIC changeset: #{cs.inspect}"
       end
-      nics
+        nics
     end
   end
 
