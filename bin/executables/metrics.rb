@@ -62,7 +62,7 @@ module Executables
             current_collector.run(it, it.machine_inventory)
           end
         rescue Timeout::Error
-          logger.error "Unable to collect consumption metrics for inventoried machines for time #{timestamp.inventory_at}. (timed out)"
+          logger.error "Unable to collect consumption metrics for inventoried machines for time #{it.inventory_at}. (timed out)"
         end
       end
     end
