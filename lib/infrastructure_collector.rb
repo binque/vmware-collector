@@ -269,7 +269,7 @@ class InfrastructureCollector
       ],
         propSet: [
         # Need to include datastore to map
-            {type: 'Datacenter', pathSet: %w(name hostFolder network datastore)},
+            {type: 'Datacenter', pathSet: %w(name hostFolder network datastore config.instanceUuid)},
             {type: 'Datastore', pathSet: %w(info summary)}
       ]
     )
