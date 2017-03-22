@@ -15,6 +15,7 @@ class Infrastructure
   include OnPremUrlGenerator
 
   field :platform_id, type: String
+  field :moref, type: String
   field :remote_id, type: String
   field :name, type: String
   field :record_status, type: String

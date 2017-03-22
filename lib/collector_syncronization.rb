@@ -62,7 +62,7 @@ class CollectorSyncronization
 
     api_machines.each do |machine|
       unless collected_vsphere_machines.detect{|m|
-               m.infrastructure_remote_id.eql?(machine.infrastructure_remote_id) and m.platform_id.eql?(machine.platform_id) }
+               m.infrastructure_remote_id.eql?(machine.infrastructure_remote_id) and m.platform_id.match(/#{machine.platform_id}|#{machine.moref}/) }
         logger.debug "Flagging #{machine.name} in #{machine.infrastructure_remote_id} for deletion"
         machine.status = 'deleted'
         machine.record_status = 'updated'
@@ -103,15 +103,13 @@ class CollectorSyncronization
       infs = JSON::parse(response.body)
 
       infs['embedded']['infrastructures'].each do |inf_json|
-        # If this infrastructure got init
-        if Infrastructure.where(platform_id: inf_json['custom_id'])
-          logger.debug "Syncing infrastructure #{inf_json['name']} from API"
-          #   Infrastructure.create({ name: inf_json['name'],
-          #                           remote_id: inf_json['id'],
-          #                           platform_id: inf_json['custom_id'],
-          #                           record_status: 'verified_create' })
+        logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
+        infrastructure = Infrastructure.where(platform_id: inf_json['custom_id']) || Infrastructure.where(moref: inf_json['custom_id'])
+
+        if infrastructure
+          logger.debug "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
           if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
-            PlatformRemoteId.create(infrastructure: inf_json['custom_id'],
+            PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
                                     remote_id: inf_json['id'])
           end
         end

@@ -15,6 +15,7 @@ class Machine
   # Remote ID it's a UUID
   field :remote_id, type: String
   field :platform_id, type: String
+  field :moref, type: String
 
   field :record_status, type: String
   field :inventory_at,  type: DateTime
