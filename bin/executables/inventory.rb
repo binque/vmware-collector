@@ -106,7 +106,9 @@ module Executables
       #   deactivate(collector.infrastructure) unless infrastructures.key?(platform_id)
       # end
       queue = Queue.new
-      @collector_hash.values.each { |collector| queue << collector }
+      @collector_hash.values.each { |collector|
+        logger.debug "adding #{collector} to queue"
+        queue << collector }
       queue
     end
 
