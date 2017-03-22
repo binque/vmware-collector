@@ -95,32 +95,18 @@ class Infrastructure
   def submit_create
     response = nil
     begin
-      logger.info "Submitting #{name} to API for creation in OnPrem"
+      logger.info "Submitting #{name_with_prefix} to API for creation in OnPrem"
       response = hyper_client.post(infrastructures_post_url, api_format)
       if response && response.code == 200
         self.remote_id = response.json['id']
-        # TODO: see if we need this at this place
-        # self.release_version = configuration[:on_prem_collector_version]
-
         update_attribute(:record_status, 'verified_create') # record_status will be ignored by local_inventory class, so we need to update it "manually"
       else
-        logger.error "Unable to create infrastructure in OnPrem for #{name}"
+        logger.error "Unable to create infrastructure in OnPrem for #{name_with_prefix}"
         logger.debug "API reponse: #{response}"
       end
-
-    rescue RestClient::Conflict => e
-      logger.warn 'Infrastructure already exists in OnPrem; attempting to update local instance to match'
-      infrastructures = hyper_client.get_all_resources(infrastructures_url)
-      me_as_json = infrastructures.find { |inf| inf['name'].eql?(name) }
-
-      if me_as_json
-        # record_status will be ignored by local_inventory class, so we need to update it "manually"
-        update_attributes(record_status: 'verified_create', remote_id: me_as_json['remote_id'])
-      else
-        logger.error "Could not retrieve remote_id from conflict response for infrastructure: #{infrastructure.name}"
-      end
     rescue StandardError => e
-      logger.error "Error creating infrastructure in OnPrem for #{name}"
+      logger.error "Error creating infrastructure in OnPrem for #{name_with_prefix}"
+      logger.error e.message
       logger.debug e
       raise
     end
@@ -128,7 +114,7 @@ class Infrastructure
   end
 
   def submit_update
-    logger.info "Updating infrastructure #{name} in OnPrem API"
+    logger.info "Updating infrastructure #{name_with_prefix} in OnPrem API"
     begin
       response = hyper_client.put(infrastructure_url(infrastructure_id: remote_id), api_format.merge(status: 'Active'))
       response_json = response.json
@@ -136,14 +122,14 @@ class Infrastructure
         self.record_status = 'verified_update'
       end
     rescue RuntimeError => e
-      logger.error "Error updating infrastructure '#{name} in OnPrem"
+      logger.error "Error updating infrastructure '#{name_with_prefix} in OnPrem"
       raise e
     end
     self
   end
 
   def attribute_map
-    { name: :name }
+    { name: :name_with_prefix }
   end
 
   def vm_to_host_map
@@ -160,10 +146,16 @@ class Infrastructure
     @hyper_client ||= HyperClient.new
   end
 
+  def name_with_prefix
+    ENV['VCENTER_LABEL'] ?
+      "#{ENV['VCENTER_LABEL']} #{name}" :
+      name
+  end
+
   # Format to submit to OnPrem Console API
   def api_format
     {
-      name: name,
+      name: name_with_prefix,
       custom_id: platform_id,
       tags: tags,
       summary: {
