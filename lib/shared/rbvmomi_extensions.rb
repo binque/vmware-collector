@@ -179,27 +179,31 @@ module RbVmomiExtensions
       host_bus_adapters = []
 
       self.changeSet.each do |cs|
-        cs.val.each do |hba|
-          hba_attrs = {}
-          host_bus_adapter_attribute_map.each do |k,v|
-            begin
-              if ( k == :speed_mbits )
-                hba_attrs[:speed_mbits] = case
+        if cs.val
+          cs.val.each do |hba|
+            hba_attrs = {}
+            host_bus_adapter_attribute_map.each do |k,v|
+              begin
+                if ( k == :speed_mbits )
+                  hba_attrs[:speed_mbits] = case
                                             when hba.respond_to?(:maxSpeedMb) then hba.maxSpeedMb         # RbVmomi::VIM::HostInternetScsiHba has 'maxSpeedMb' (megabits/second)
                                             when hba.respond_to?(:speed)      then hba.speed / 1_000_000  # RbVmomi::VIM::HostFibreChannelHba has 'speed' (bits/second)
                                             else 0
-                                          end
-              else
-                hba_attrs[k] = hba.send(v)
+                                            end
+                else
+                  hba_attrs[k] = hba.send(v)
+                end
+              rescue StandardError => e
+                logger = Logging::MeterLog.instance.logger
+                logger.warn e.message
+                logger.debug e.backtrace.join("\n")
               end
-            rescue StandardError => e
-              logger = Logging::MeterLog.instance.logger
-              logger.warn e.message
-              logger.debug e.backtrace.join("\n")
             end
-          end
 
-          host_bus_adapters << hba_attrs
+            host_bus_adapters << hba_attrs
+          end
+        else
+          puts "Empty cs.val for HBA changeset: #{cs.inspect}"
         end
       end
 
