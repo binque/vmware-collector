@@ -185,6 +185,7 @@ class OnPremConnector
   def prep_and_post_reading(machine_reading)
     mr = machine_reading
     infrastructure_prid = @local_platform_remote_id_inventory["i:#{mr.id[:infrastructure_platform_id]}"]
+    logger.debug "mr.id: #{mr.id}"
     unless infrastructure_prid
       logger.fatal "Infrastructure missing for #{mr.inspect}. Aborting"
       abort  # dying, and resyncing with API, might rectify
@@ -206,7 +207,6 @@ class OnPremConnector
       else
         logger.info "Delaying submission of readings for machine #{mr.id[:machine_platform_id]} "\
                     "until corresponding OnPrem infrastructure #{machine_prid ? '' : 'and machine '}resources have been created"
-        logger.debug @local_platform_remote_id_inventory.inspect
       end
     else
       mr.update_readings_status('machine_deleted')
@@ -236,7 +236,7 @@ class OnPremConnector
     machine_creates.each do |created_machine|
       begin
         infrastructure_prid = @local_platform_remote_id_inventory["i:#{created_machine.infrastructure_platform_id}"]
-
+        logger.debug "created_machine.ipi: #{created_machine.infrastructure_platform_id}"
         if infrastructure_prid
 
           if @local_platform_remote_id_inventory.key?("i:#{created_machine.infrastructure_platform_id}/m:#{created_machine.platform_id}")
@@ -255,7 +255,6 @@ class OnPremConnector
         else
           logger.info "Delaying submission of machine '#{created_machine.platform_id}' "\
                       'to OnPrem API until parent infrastructure has been submitted'
-          logger.debug  @local_platform_remote_id_inventory.inspect
         end
       rescue StandardError => e
         logger.error "Error creating machine: #{e.message}"
