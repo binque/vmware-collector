@@ -255,7 +255,7 @@ class OnPremConnector
         else
           logger.info "Delaying submission of machine '#{created_machine.platform_id}' "\
                       'to OnPrem API until parent infrastructure has been submitted'
-
+          logger.debug  @local_platform_remote_id_inventory.inspect
         end
       rescue StandardError => e
         logger.error "Error creating machine: #{e.message}"
