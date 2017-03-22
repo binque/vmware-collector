@@ -289,13 +289,9 @@ class InfrastructureInventory < MongoHash
     end
   end
 
-  #!! may not need - initialization currently excluding disabled
-  #def active
-    #values.reject{|i| i.meter_instance.status == 'disabled'}
-  #end
 
   def filtered_items
-    Infrastructure.nin(record_status: ['deleted','disabled'])
+    Infrastructure.nin(record_status: ['deleted'])
   end
 end
 

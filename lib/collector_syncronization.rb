@@ -180,7 +180,7 @@ class CollectorSyncronization
 
   def collect_machine_inventory
     time_to_query = Time.now.truncated
-    Infrastructure.enabled.each do |infrastructure|
+    Infrastructure.all.each do |infrastructure|
       logger.info "Collecting inventory for #{infrastructure.name}"
       begin
         collector = InventoryCollector.new(infrastructure)
@@ -188,7 +188,6 @@ class CollectorSyncronization
       rescue StandardError => e
         logger.error e.message
         logger.debug e.backtrace.join("\n")
-        # infrastructure.disable
       end
     end
     machine_count = Machine.distinct(:platform_id).count

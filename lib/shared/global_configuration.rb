@@ -26,24 +26,9 @@ module GlobalConfiguration
         "#{progname} (#{severity}): #{msg}\n"
       end
 
-      # Initialize iwth default values
+      # Initialize with default values
       merge!(defaults)
       load_secrets
-      # Process environment (e.g., mongo info could be passed in through ENV)
-      #  Since environment overrides everything, we "freeze" these values so they won't
-      #  get updated by subsequent configuration sources
-      # (keys + aliases.keys).each do |opt|
-      #   freeze(opt, ENV[opt.to_s.upcase]) if ENV[opt.to_s.upcase].present?
-      # end
-
-      # Pull in dev/test configs
-      # process_config_overrides
-
-      # !! dynamically base this off vsphere_session_limit
-      # store in such a way that it can be merged with yaml overrides
-      # store(:mongoid_options, pool_size: 20)
-      # Update values with configuration from mongo
-      # Original configuration, uncomment it to make it work on the container
 
       @logger.level = fetch(:on_prem_log_level)
       Logging::MeterLog.instance.logger.level = fetch(:on_prem_log_level)
@@ -111,11 +96,6 @@ module GlobalConfiguration
           encryption_secret: ->(v) { @encryption_secret = v } # analog to fetch hook below to update memoized value
       }
     end
-
-    # def get_an_infrastructure_id(*)
-    #   infrastructure = Infrastructure.enabled.first || Infrastructure.first
-    #   infrastructure ? infrastructure.remote_id : nil
-    # end
 
     def fetch_hooks
       @fetch_hooks ||= {
@@ -192,39 +172,6 @@ module GlobalConfiguration
       super(key, value) unless @frozen_keys.include?(key)
     end
 
-    # def config_root
-    #   pwd = Dir.pwd
-    #   @config_root ||= begin
-    #     if File.readable?("#{pwd}/config/#{@environment}/inventory_mongoid_container.yml")
-    #       "#{pwd}/config/#{@environment}"
-    #     elsif File.readable?("config/#{@environment}/inventory_mongoid_container.yml")
-    #       "config/#{@environment}"
-    #     else
-    #       'config'
-    #     end
-    #   end
-    # end
-
-    # def process_config_overrides
-    #   process_yaml
-    #   load_secrets
-    # end
-
-    # def process_yaml
-    #   file = "#{config_root}/#{ENV['CONTAINER']}_mongoid_container.yml" # "/config/development/#{filename}.yml" #!!! Change to this if you are gonna run it out of container
-    #   if File.readable?(file)
-    #     @logger.debug "Loading configuration overrides from #{file}"
-    #     begin
-    #       config = YAML.load(ERB.new(File.read(file)).result)[@environment]['sessions']['default']
-    #       config.each { |key, value| store("mongoid_#{key}".to_sym, human_to_machine(value)) }
-    #     rescue StandardError => e
-    #       @logger.warn "Could not parse configuration file: #{file}"
-    #       @logger.debug e
-    #       @logger.debug File.read(file)
-    #     end
-    #   end
-    # end
-
     def load_secrets
       vsphere_secrets = %w(host password user debug ignore-ssl-errors readings-batch-size)
       on_prem_secrets = %w(api-host log-level oauth-endpoint api-endpoint organization-id
@@ -252,6 +199,7 @@ module GlobalConfiguration
           true
         when /^false|no$/ then
           false
+          # these can probably be ditched
         when 'debug' then
           Logger::DEBUG
         when 'error' then
@@ -285,19 +233,6 @@ module GlobalConfiguration
       proxy_string += ":#{fetch(:u6_proxy_port)}" if key?(:on_prem_proxy_port)
       proxy_string
     end
-
-    # def database_name(*)
-    #   case ENV['METER_ENV']
-    #     when 'production' then
-    #       '6fusion_meter'
-    #     when 'staging' then
-    #       '6fusion_meter_staging'
-    #     when 'test' then
-    #       '6fusion_meter_testing'
-    #     else
-    #       '6fusion_meter_development'
-    #   end
-    # end
 
     def infer_mongoid_log_level(*)
       # Mongoid should only be bumped up to debug if it's been explicitly set. I.e., don't assume that because the

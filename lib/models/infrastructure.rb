@@ -21,8 +21,6 @@ class Infrastructure
   # Tags are currently static defaults only, not updated during collection
   field :tags, type: Array, default: ['platform:VMware', 'collector:VMware']
 
-  # TODO: Check if this is required by the inventory collector
-  field :enabled, type: Boolean, default: true
   field :status, type: String, default: 'online'
   field :vcenter_server, type: String # !! hmmmm
   # field :release_version, type: String, default: 'alpha'
@@ -35,15 +33,12 @@ class Infrastructure
   accepts_nested_attributes_for :networks
   accepts_nested_attributes_for :volumes
 
-  # Infrastructure Statuses: created, updated, deleted, disabled, verified_create, verified_update
+  # Infrastructure Statuses: created, updated, deleted, verified_create, verified_update
   scope :to_be_created_or_updated, -> { where(:record_status.in => %w(created updated)) }
-  # TODO: Verify if we still need this index
-  scope :enabled, -> { where(enabled: true) }
 
   index(record_status: 1)
 
   # TODO: Verify if we still need this index
-  index(enabled: 1)
 
   def total_server_count
     @total_server_count ||= hosts.size
@@ -97,19 +92,6 @@ class Infrastructure
     end
   end
 
-  # TODO: CHECK IF WE STILL NEED THIS METHOD
-  def enabled?
-    enabled
-  end
-
-  def disable
-    update_attribute('enabled', false)
-  end
-
-  def enable
-    update_attribute('enabled', true)
-  end
-
   def submit_create
     response = nil
     begin
@@ -118,7 +100,6 @@ class Infrastructure
       if response && response.code == 200
         self.remote_id = response.json['id']
         # TODO: see if we need this at this place
-        self.enabled = 'true'
         # self.release_version = configuration[:on_prem_collector_version]
 
         update_attribute(:record_status, 'verified_create') # record_status will be ignored by local_inventory class, so we need to update it "manually"

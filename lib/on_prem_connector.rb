@@ -61,7 +61,7 @@ class OnPremConnector
 
   # Used by the registration process to update platform_remote_id with machine remote IDs (if they exist in OnPrem prior to meter registration)
   def initialize_platform_ids
-    Infrastructure.enabled.each do |infrastructure|
+    Infrastructure.all.each do |infrastructure|
       local_inventory = MachineInventory.new(infrastructure)
       on_prem_inventory = retrieve_machines(infrastructure) { |msg| yield msg if block_given? } # this is so the registration wizard can scroll names as they're retrieved, I think
       local_inventory.each do |platform_id, local_machine|
@@ -185,6 +185,10 @@ class OnPremConnector
   def prep_and_post_reading(machine_reading)
     mr = machine_reading
     infrastructure_prid = @local_platform_remote_id_inventory["i:#{mr.id[:infrastructure_platform_id]}"]
+    unless infrastructure_prid
+      logger.fatal "Infrastructure missing for #{mr.inspect}. Aborting"
+      abort  # dying, and resyncing with API, might rectify
+    end
     machine_prid = @local_platform_remote_id_inventory["#{infrastructure_prid.platform_key}/m:#{mr.id[:machine_platform_id]}"]
     if machine_exists?(mr)
       if machine_prid && infrastructure_prid
