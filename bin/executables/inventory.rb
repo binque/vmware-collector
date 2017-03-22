@@ -97,9 +97,10 @@ module Executables
           InfrastructureInventory.new.select { |_key, inf| inf.name.eql?(configuration[:data_center]) } :
           InfrastructureInventory.new
 
-      # infrastructures.each_value do |infrastructure|
+      infrastructures.each_value do |infrastructure|
+        activate(infrastructure)
       #   infrastructure.enabled? ? activate(infrastructure) : deactivate(infrastructure)
-      # end
+      end
       # Remove any that we know about, but are no longer returned by InfrastructureInventory (which filters out disabled)
       @collector_hash.each do |platform_id, collector|
         deactivate(collector.infrastructure) unless infrastructures.key?(platform_id)
