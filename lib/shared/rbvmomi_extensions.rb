@@ -248,7 +248,9 @@ module RbVmomiExtensions
     def data_center_properties
       attributes = Hash.new
       logger = nil
-
+      puts "Propset for datacenter"
+      p propSet
+      puts "--------------------"
       propSet.each do |cs|
         begin
           if ( cs.name =~ /^name|hostFolder$/ )
@@ -267,7 +269,7 @@ module RbVmomiExtensions
           logger.debug e.backtrace.join("\n")
         end
       end
-      attributes[:platform_id] = self.instanceUuid
+      attributes[:platform_id] = instanceUuid
       attributes[:moref] = self.moref
 #      attributes[:platform_id] = self.repond_to?(:instanceUuid) ? self.instanceUuid : self.moref
       attributes
