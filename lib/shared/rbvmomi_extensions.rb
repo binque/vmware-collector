@@ -30,7 +30,7 @@ module RbVmomiExtensions
     def machine_properties
       logger = Logging::MeterLog.instance.logger
       updated_attributes = Hash.new
-      attributes[:platform_id] = instanceUuid
+      attributes[:platform_id] = moref #instanceUuid
       attributes[:moref] = moref
       updated_attributes[:disks] = Array.new
       updated_attributes[:nics] = Hash.new{|h,k|h[k] = Hash.new}
@@ -267,7 +267,7 @@ module RbVmomiExtensions
           logger.debug e.backtrace.join("\n")
         end
       end
-      attributes[:platform_id] = instanceUuid
+      attributes[:platform_id] = self.moref #instanceUuid
       attributes[:moref] = self.moref
 #      attributes[:platform_id] = self.repond_to?(:instanceUuid) ? self.instanceUuid : self.moref
       attributes
