@@ -107,6 +107,7 @@ class CollectorSyncronization
         infrastructure = Infrastructure.where(platform_id: inf_json['custom_id']) || Infrastructure.where(moref: inf_json['custom_id'])
 
         if infrastructure
+          infrastructure = infrastructure.first
           logger.debug "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
           if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
             PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
