@@ -104,10 +104,9 @@ class CollectorSyncronization
 
       infs['embedded']['infrastructures'].each do |inf_json|
         logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
-        infrastructure = Infrastructure.where(platform_id: inf_json['custom_id']) || Infrastructure.where(moref: inf_json['custom_id'])
+        infrastructure = Infrastructure.where(platform_id: inf_json['custom_id']).first || Infrastructure.where(moref: inf_json['custom_id']).first
 
         if infrastructure
-          infrastructure = infrastructure.first
           logger.debug "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
           if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
             PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
