@@ -189,7 +189,9 @@ class OnPremConnector
       logger.fatal "Infrastructure missing for #{mr.inspect}. Aborting"
       abort  # dying, and resyncing with API, might rectify
     end
+    logger.debug "infrastructure_prid: #{infrastructure_prid}"
     machine_prid = @local_platform_remote_id_inventory["#{infrastructure_prid.platform_key}/m:#{mr.id[:machine_platform_id]}"]
+    logger.debug "machine_prid: #{machine_prid}"
     if machine_exists?(mr)
       if machine_prid && infrastructure_prid
         begin
@@ -204,6 +206,7 @@ class OnPremConnector
       else
         logger.info "Delaying submission of readings for machine #{mr.id[:machine_platform_id]} "\
                     "until corresponding OnPrem infrastructure #{machine_prid ? '' : 'and machine '}resources have been created"
+        logger.debug @local_platform_remote_id_inventory.inspect
       end
     else
       mr.update_readings_status('machine_deleted')
