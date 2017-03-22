@@ -102,9 +102,9 @@ module Executables
       #   infrastructure.enabled? ? activate(infrastructure) : deactivate(infrastructure)
       end
       # Remove any that we know about, but are no longer returned by InfrastructureInventory (which filters out disabled)
-      @collector_hash.each do |platform_id, collector|
-        deactivate(collector.infrastructure) unless infrastructures.key?(platform_id)
-      end
+      # @collector_hash.each do |platform_id, collector|
+      #   deactivate(collector.infrastructure) unless infrastructures.key?(platform_id)
+      # end
       queue = Queue.new
       @collector_hash.values.each { |collector| queue << collector }
       queue
