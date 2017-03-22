@@ -236,11 +236,11 @@ module RbVmomiExtensions
             end
             nics << nic_attrs
           end
+        else
+          puts "Empty cs.val for NIC changeset: #{cs.inspect}"
         end
-      else
-        puts "Empty cs.val for NIC changeset: #{cs.inspect}"
       end
-        nics
+      nics
     end
   end
 
