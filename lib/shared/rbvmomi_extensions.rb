@@ -248,11 +248,9 @@ module RbVmomiExtensions
     def data_center_properties
       attributes = Hash.new
       logger = nil
-      puts "Propset for datacenter"
-      p propSet
-      puts "--------------------"
       propSet.each do |cs|
         begin
+          puts "cs.name=#{cs.name}"
           if ( cs.name =~ /^name|hostFolder$/ )
             attributes[cs.name.to_sym] = cs.val
           elsif ( cs.name == 'network' )

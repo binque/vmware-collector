@@ -190,7 +190,7 @@ class InventoryCollector
     [ # Machine Attributes
         'name',
         'config.guestFullName', # !! This is throwing property error
-        #      'config.instanceUuid',
+        'config.instanceUuid',
         'summary.config.numCpu',
         'summary.config.memorySizeMB',
         'summary.runtime.powerState',
