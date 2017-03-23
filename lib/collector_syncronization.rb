@@ -47,7 +47,7 @@ class CollectorSyncronization
     get_infrastructures_from_vsphere
     submit_infrastructures
 
-    # First block of code is primarily to detect delets
+    # First block of code is primarily to detect deletes
     get_machines_from_api
     api_machines = Machine.where(status: 'api')
 

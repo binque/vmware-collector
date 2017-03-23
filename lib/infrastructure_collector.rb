@@ -12,13 +12,14 @@ class InfrastructureCollector
   MEGABIT_TO_BIT = 1_000_000
   BASIC_INFRASTRUCTURE_FIELDS = [:name, :platform_id]
   BASIC_HOST_FIELDS = [:platform_id, :uuid, :name, :cluster, :cluster_platform_id, :cpu_hz, :cpu_model,
-    :cpu_cores, :sockets, :threads, :cpus, :memory, :vendor, :model, :os,
-    :os_version, :os_vendor, :inventory]
+                       :cpu_cores, :sockets, :threads, :cpus, :memory, :vendor, :model, :os,
+                       :os_version, :os_vendor, :inventory]
   def initialize
     logger.info 'Initializing infrastructure collector'
     @local_inventory = InfrastructureInventory.new
-
+    @vcenter_id = ""
     VSphere.wrapped_vsphere_request do
+      @vcenter_id = VSphere.session.serviceInstance.about.instanceUuid
       VSphere.session.propertyCollector.CreateFilter(spec: hosts_filter_spec(VSphere.root_folder, Host.vsphere_query_properties),
                                                      partialUpdates: false)
     end
@@ -91,6 +92,7 @@ class InfrastructureCollector
         @host_objects[key] = Host.new(host)
       end
       data_centers_hash.each do |platform_id, properties|
+        properties[:name] = "#{properties[:name]} (vcenter:#{@vcenter_id})"
         host_ids = hosts_for_datacenter(properties[:hostFolder])
 
         properties[:hosts] = @host_objects.select { |k| host_ids.include?(k) }.values

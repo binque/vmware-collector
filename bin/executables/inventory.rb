@@ -29,7 +29,9 @@ module Executables
       inv_timestamps = initialize_inventoried_timestamps_with_inventory_for(ctime)
       # Handle the case where inventory was collected outside of
       # this process (e.g., meter registration)
+      puts "inv_timestamps: #{inv_timestamps}"
       inv_timestamps.each do |inv|
+        puts "checking inventory timestamp: #{inv}"
         if inv.persisted?
 #          @job.unschedule
         else
