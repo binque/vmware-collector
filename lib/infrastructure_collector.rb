@@ -19,7 +19,7 @@ class InfrastructureCollector
     @local_inventory = InfrastructureInventory.new
     @vcenter_id = ""
     VSphere.wrapped_vsphere_request do
-      @vcenter_id = VSphere.session.serviceInstance.about.instanceUuid
+      @vcenter_id = VSphere.session.serviceContent.about.instanceUuid
       VSphere.session.propertyCollector.CreateFilter(spec: hosts_filter_spec(VSphere.root_folder, Host.vsphere_query_properties),
                                                      partialUpdates: false)
     end

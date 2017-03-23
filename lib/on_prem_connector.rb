@@ -190,9 +190,9 @@ class OnPremConnector
       logger.fatal "Infrastructure missing for #{mr.inspect}. Aborting"
       abort  # dying, and resyncing with API, might rectify
     end
-    logger.debug "infrastructure_prid: #{infrastructure_prid}"
+    logger.debug "infrastructure_prid: #{infrastructure_prid.inspect}"
     machine_prid = @local_platform_remote_id_inventory["#{infrastructure_prid.platform_key}/m:#{mr.id[:machine_platform_id]}"]
-    logger.debug "machine_prid: #{machine_prid}"
+    logger.debug "machine_prid: #{machine_prid.inspect}"
     if machine_exists?(mr)
       if machine_prid && infrastructure_prid
         begin
@@ -236,7 +236,7 @@ class OnPremConnector
     machine_creates.each do |created_machine|
       begin
         infrastructure_prid = @local_platform_remote_id_inventory["i:#{created_machine.infrastructure_platform_id}"]
-        logger.debug "created_machine.ipi: #{created_machine.infrastructure_platform_id}"
+        logger.debug "created_machine.pi: #{created_machine.infrastructure_platform_id}"
         if infrastructure_prid
 
           if @local_platform_remote_id_inventory.key?("i:#{created_machine.infrastructure_platform_id}/m:#{created_machine.platform_id}")
