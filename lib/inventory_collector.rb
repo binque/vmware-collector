@@ -23,13 +23,7 @@ class InventoryCollector
     @vsphere_session = VSphere::VSphereSession.new.session
 
 
-    puts "===================================================================================================="
-    p @vsphere_session.rootFolder.childEntity
-    puts "===================================================================================================="
-    @data_center = @vsphere_session.rootFolder.childEntity.grep(RbVmomi::VIM::Datacenter).find { |dc|
-      puts "looking for DC in rootfolder"
-      p dc.moref;
-      dc.moref == infrastructure.platform_id }
+    @data_center = @vsphere_session.rootFolder.childEntity.grep(RbVmomi::VIM::Datacenter).find { |dc| dc.moref == infrastructure.platform_id }
     # Note: rbvmomi's find_datacenter method must be avoided as it can require excessive privileges due to search index utilization
 
     # Currently the app does not support datacenter deletions, not even how to detect if they were deleted
@@ -83,6 +77,7 @@ class InventoryCollector
               machine.tags << 'type:virtual machine'
               machine.tags << 'platform:VMware'
               if machine.record_status == 'incomplete'
+                logger.debug "Incomplete machine update: #{machine}"
                 if @local_inventory.key?(machine.platform_id)
                   previous_version = @local_inventory[machine.platform_id]
 

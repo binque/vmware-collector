@@ -179,6 +179,7 @@ class CollectorSyncronization
 
   def collect_machine_inventory
     time_to_query = Time.now.truncated
+    puts "Collecting inventory for infrastructures: #{Infrastructure.all}"
     Infrastructure.all.each do |infrastructure|
       logger.info "Collecting inventory for #{infrastructure.name}"
       begin

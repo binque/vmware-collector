@@ -24,7 +24,7 @@ scheduler_5m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_15m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_30m = Rufus::Scheduler.new(max_work_threads: 1)
 
-logger.info 'API syncronization scheduled to run every 30 seconds'
+logger.info 'API syncronization scheduled to run every minute'
 scheduler_1m.every '1m' do
   processSignals
   Executables::ApiSync.new(scheduler_1m).execute

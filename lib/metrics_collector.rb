@@ -49,6 +49,11 @@ class MetricsCollector
       end
     end
 
+    if machine_morefs.size > @readings.size
+      logger.warn "Incomplete readings retrieval (#{machine_morefs.size} vs #{@readings.size}). Will try again later."
+      return
+    end
+
     @readings.each { |r| r.end_time ||= collected_time }
     (machine_morefs - @readings.map(&:machine_platform_id)).each do |moref|
       machine = @local_inventory[moref]

@@ -187,11 +187,16 @@ class OnPremConnector
     infrastructure_prid = @local_platform_remote_id_inventory["i:#{mr.id[:infrastructure_platform_id]}"]
     logger.debug "mr.id: #{mr.id}"
     unless infrastructure_prid
-      logger.fatal "Infrastructure missing for #{mr.inspect}. Aborting"
-      abort  # dying, and resyncing with API, might rectify
+      logger.error "Infrastructure missing for #{mr.id}. Skipping"
+      return  # dying, and resyncing with API, might rectify
     end
     logger.debug "infrastructure_prid: #{infrastructure_prid.inspect}"
     machine_prid = @local_platform_remote_id_inventory["#{infrastructure_prid.platform_key}/m:#{mr.id[:machine_platform_id]}"]
+    unless machine_prid
+      logger.error "Machine missing for #{mr.id}. Skipping"
+      return  # dying, and resyncing with API, might rectify
+    end
+
     logger.debug "machine_prid: #{machine_prid.inspect}"
     if machine_exists?(mr)
       if machine_prid && infrastructure_prid
