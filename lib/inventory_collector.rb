@@ -87,7 +87,7 @@ class InventoryCollector
                   # 1. API requires nics/disks for machine updates (this needs to be fixed)
                   # 2. Machines occasionally migrate, which leads to some empty properties
                   # Should look into if possible to get full information from migrated machine data
-x                  # Also, API updates to not require at least 1 disk/nic will eliminate need for fakes
+                  # Also, API updates to not require at least 1 disk/nic will eliminate need for fakes
 
                   # If a machine has any fake nic, it may be during a migration -- so the machine actually has disks/nics
                   # So, safer to just use previous
