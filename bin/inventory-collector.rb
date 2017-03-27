@@ -19,20 +19,23 @@ unless VmwareConfiguration.first and VmwareConfiguration.first.configured
   exit(0)
 end
 
-scheduler_30s = Rufus::Scheduler.new(max_work_threads: 1)
+scheduler_1m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_5m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_15m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_30m = Rufus::Scheduler.new(max_work_threads: 1)
 
 logger.info 'API syncronization scheduled to run every 30 seconds'
-scheduler_30s.every '30s' do
+scheduler_1m.every '1m' do
   processSignals
-  Executables::ApiSync.new(scheduler_30s).execute
+  Executables::ApiSync.new(scheduler_1m).execute
 end
 
 logger.info 'Inventory and Infrastructure scheduled to run every 5 minutes'
 
 hak = Executables::Inventory.new
+puts "running hak"
+hak.execute
+puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 scheduler_5m.cron '*/5 * * * *' do |job|
   processSignals
   hak.execute
@@ -51,4 +54,4 @@ scheduler_30m.every '30m' do
   Executables::MissingReadings.new(scheduler_30m).execute
 end
 
-[scheduler_30s, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)
+[scheduler_1m, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)

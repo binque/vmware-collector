@@ -25,14 +25,14 @@ class CollectorSyncronization
   end
 
   def sync_data
-    start_sync if access_granted? && !@configured
+    start_sync unless @configured #if access_granted? && !@configured
   end
 
   private
 
-  def access_granted?
-    @configuration[:verified_api_connection] && @configuration[:verified_vsphere_connection]
-  end
+  # def access_granted?
+  #   @configuration[:verified_api_connection] && @configuration[:verified_vsphere_connection]
+  # end
 
   def set_configured
     VmwareConfiguration.create(configured: true)
