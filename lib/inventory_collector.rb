@@ -66,6 +66,7 @@ class InventoryCollector
               end
 
               machine = Machine.build_from_vsphere_vm(os.machine_properties)
+              logger.debug "Creating #{machine.name} for infrastructure #{@infrastructure.platform_id}"
               machine.infrastructure_platform_id = @infrastructure.platform_id
               machine.infrastructure_remote_id = @infrastructure.remote_id
 
