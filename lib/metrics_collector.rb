@@ -29,7 +29,6 @@ class MetricsCollector
     # If no morefs were passed in, use all inventory morefs present for the desired timestamp
     machine_morefs = morefs_to_meter.blank? ? filtered_inventory_morefs : morefs_to_meter
     morefs_present_in_results = []
-
     logger.info "Collecting consumption metrics for machines inventoried at #{time_to_query}"
     machine_morefs.each_slice(configuration[:vsphere_readings_batch_size].to_i / 6).each do |morefs|
       logger.debug "Collecting metrics for #{morefs.size} machines"
@@ -78,8 +77,10 @@ class MetricsCollector
       @readings << reading
     end
 
-    if  @readings.size == 0 and machine_morefs.size > 0
+    if (@readings.size <  machine_morefs.size) and (inventoried_time.fail_count < 10)
       logger.warn "#{@readings.size} readings returned for query of #{machine_morefs.size} machines. Will try again later."
+      fail_count = inventoried_time.fail_count
+      inventoried_time.update_attribute(:fail_count, fail_count + 1)
       return
     end
 

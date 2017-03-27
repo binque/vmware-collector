@@ -7,6 +7,8 @@ class InventoriedTimestamp
   field :machine_inventory, type: Array
   field :locked, type: Boolean, default: false
   field :locked_by, type: String
+  field :fail_count, type: Integer, default: 0
+
   index(record_status: 1)
   # Expiration
   index({inventory_at: 1}, expire_after_seconds: 1.week)
