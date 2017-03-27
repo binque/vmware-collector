@@ -152,7 +152,7 @@ class MachineInventory < MongoHash
       machine_as_document.delete('_id')
       machine_as_document['disks'].each{|d|d.delete('_id')}  if machine_as_document['disks'].present?
       machine_as_document['nics'].each{|d|d.delete('_id')} if machine_as_document['nics'].present?
-
+      logger.debug "Adding deletion record for #{platform_id}"
       self[platform_id] = Machine.new(machine_as_document)
     else
       logger.warn "Attempt to delete machine #{platform_id} which is not stored to inventory."
