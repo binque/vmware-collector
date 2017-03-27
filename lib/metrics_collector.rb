@@ -49,11 +49,6 @@ class MetricsCollector
       end
     end
 
-    if machine_morefs.size > @readings.size
-      logger.warn "Incomplete readings retrieval (#{machine_morefs.size} vs #{@readings.size}). Will try again later."
-      return
-    end
-
     @readings.each { |r| r.end_time ||= collected_time }
     (machine_morefs - @readings.map(&:machine_platform_id)).each do |moref|
       machine = @local_inventory[moref]
@@ -81,6 +76,12 @@ class MetricsCollector
       end
       @readings << reading
     end
+
+    if  @readings.size == 0
+      logger.warn "No readings returned for query of #{machine_morefs.size} machines. Will try again later."
+      return
+    end
+
     logger.info "Adding #{@readings.size} readings to metrics collection"
 
     # We don't update the status until all metrics have been collected. This way, if
