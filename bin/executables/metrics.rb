@@ -53,7 +53,7 @@ module Executables
           it.save!
         end
       end
-      inventoried_timestamps_to_be_metered(@container_name).each do |it|
+      inventoried_timestamps_to_be_metered(@container_name).sort_by(&:inventory_at).reverse.each do |it|
         next if not inventoried_timestamp_free_to_meter? it
         begin
           time = it.inventory_at < INVENTORY_WIGGLE_TIME.minutes.ago ? FITHTEEN_MINUTES_IN_SECONDS : FIVE_MINUTES_IN_SECONDS
