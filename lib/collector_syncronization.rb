@@ -105,7 +105,7 @@ class CollectorSyncronization
       infs['embedded']['infrastructures'].each do |inf_json|
         logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
         logger.debug inf_json
-        infrastructure = Infrastructure.where(platform_id: inf_json['custom_id']).first || Infrastructure.where(moref: inf_json['custom_id']).first
+        infrastructure = Infrastructure.where(name: inf_json['name']).first || Infrastructure.where(platform_id: inf_json['custom_id']).first
         logger.debug infrastructure.inspect
         if infrastructure
           logger.debug "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
