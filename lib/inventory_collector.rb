@@ -22,6 +22,10 @@ class InventoryCollector
     @local_inventory = MachineInventory.new(infrastructure)
     @vsphere_session = VSphere::VSphereSession.new.session
 
+
+    puts "===================================================================================================="
+    p @vsphere_session.rootFolder.childEntity
+    puts "===================================================================================================="
     @data_center = @vsphere_session.rootFolder.childEntity.grep(RbVmomi::VIM::Datacenter).find { |dc|
       puts "looking for DC in rootfolder"
       p dc.moref;
