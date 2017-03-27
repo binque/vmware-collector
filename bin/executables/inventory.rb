@@ -109,7 +109,7 @@ module Executables
       # end
       queue = Queue.new
       @collector_hash.values.each { |collector|
-        logger.debug "adding #{collector.inspect} to queue"
+        logger.debug "adding #{collector.infrastructure.name} to queue"
         queue << collector }
       queue
     end
