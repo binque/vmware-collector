@@ -31,7 +31,7 @@ class MetricsCollector
     morefs_present_in_results = []
 
     logger.info "Collecting consumption metrics for machines inventoried at #{time_to_query}"
-    machine_morefs.each_slice(configuration[:vsphere_readings_batch_size].to_i).each do |morefs|
+    machine_morefs.each_slice(configuration[:vsphere_readings_batch_size].to_i / 6).each do |morefs|
       logger.debug "Collecting metrics for #{morefs.size} machines"
       results = custom_retrieve_stats(morefs,
                                       Reading.metrics,
