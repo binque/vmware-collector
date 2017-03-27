@@ -79,7 +79,7 @@ class MetricsCollector
     end
 
     if  @readings.size == 0 and machine_morefs.size > 0
-      logger.warn "No readings returned for query of #{machine_morefs.size} machines. Will try again later."
+      logger.warn "#{@readings.size} readings returned for query of #{machine_morefs.size} machines. Will try again later."
       return
     end
 
