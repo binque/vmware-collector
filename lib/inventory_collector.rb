@@ -22,7 +22,10 @@ class InventoryCollector
     @local_inventory = MachineInventory.new(infrastructure)
     @vsphere_session = VSphere::VSphereSession.new.session
 
-    @data_center = @vsphere_session.rootFolder.childEntity.grep(RbVmomi::VIM::Datacenter).find { |dc| dc.name == infrastructure.name }
+    @data_center = @vsphere_session.rootFolder.childEntity.grep(RbVmomi::VIM::Datacenter).find { |dc|
+      puts "looking for DC in rootfolder"
+      p dc.moref;
+      dc.moref == infrastructure.platform_id }
     # Note: rbvmomi's find_datacenter method must be avoided as it can require excessive privileges due to search index utilization
 
     # Currently the app does not support datacenter deletions, not even how to detect if they were deleted
