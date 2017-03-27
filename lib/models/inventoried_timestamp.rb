@@ -21,6 +21,6 @@ class InventoriedTimestamp
     InventoriedTimestamp.where(record_status: status,
       :inventory_at.lte => 6.minutes.ago,
       :inventory_at.gte => 23.hours.ago)
-    .asc(:inventory_at).limit(inv_timestamp_limit)
+    .desc(:inventory_at).limit(inv_timestamp_limit)
   end
 end
