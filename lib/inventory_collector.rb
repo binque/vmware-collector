@@ -77,6 +77,9 @@ class InventoryCollector
               machine.assign_fake_nic if machine.nics.empty?
               machine.tags << 'type:virtual machine'
               machine.tags << 'platform:VMware'
+              if (machine.name.nil? or machine.name.empty?)
+                logger.debug "Machine with no name: #{machine.inspect}"
+              end
               if machine.record_status == 'incomplete'
                 logger.debug "Incomplete machine update: #{machine}"
                 if @local_inventory.key?(machine.platform_id)
