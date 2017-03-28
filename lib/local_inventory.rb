@@ -174,6 +174,7 @@ class MachineInventory < MongoHash
       clone_mach.disks = machine.disks.map{|d| d.clone }
       clone_mach.nics = machine.nics.map{|n| n.clone }
       clone_mach.inventory_at = inventory_time
+      puts "cloned machine inf: #{clone_mach.infrastructure_platform_id}/#{clone_mach.infrastructure_remote_id}"
       clone_mach
     end
 

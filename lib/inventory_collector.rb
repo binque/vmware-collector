@@ -80,6 +80,10 @@ class InventoryCollector
               if (machine.name.nil? or machine.name.empty?)
                 logger.debug "Machine with no name: #{machine.inspect}"
               end
+              if (machine.infrastructure_platform_id.nil? or machine.infrastructure_platform_id.blank?)
+                logger.debug "machine with no IPI: #{machine.inspect} (#{@infrastructure.inspect})"
+              end
+
               if machine.record_status == 'incomplete'
                 logger.debug "Incomplete machine update: #{machine}"
                 if @local_inventory.key?(machine.platform_id)
