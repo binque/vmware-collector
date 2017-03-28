@@ -21,8 +21,8 @@ end
 
 scheduler_1m = Rufus::Scheduler.new(max_work_threads: 1)
 scheduler_5m = Rufus::Scheduler.new(max_work_threads: 1)
-scheduler_15m = Rufus::Scheduler.new(max_work_threads: 1)
-scheduler_30m = Rufus::Scheduler.new(max_work_threads: 1)
+# scheduler_15m = Rufus::Scheduler.new(max_work_threads: 1)
+# scheduler_30m = Rufus::Scheduler.new(max_work_threads: 1)
 
 logger.info 'API syncronization scheduled to run every minute'
 scheduler_1m.every '1m' do
@@ -33,25 +33,23 @@ end
 logger.info 'Inventory and Infrastructure scheduled to run every 5 minutes'
 
 hak = Executables::Inventory.new
-puts "running hak"
-hak.execute
-puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 scheduler_5m.cron '*/5 * * * *' do |job|
   processSignals
   hak.execute
   Executables::Infrastructure.new(scheduler_5m).execute
 end
 
-logger.info 'Metrics missing locked cleaning process scheduled to run every 15 minutes'
-scheduler_15m.every '15m' do
-  processSignals
-  Executables::MissingReadingsCleaner.new(scheduler_15m).execute
-end
+# logger.info 'Metrics missing locked cleaning process scheduled to run every 15 minutes'
+# scheduler_15m.every '15m' do
+#   processSignals
+#   Executables::MissingReadingsCleaner.new(scheduler_15m).execute
+# end
 
-logger.info 'Metrics missing readings scheduled to run every 30 minutes'
-scheduler_30m.every '30m' do
-  processSignals
-  Executables::MissingReadings.new(scheduler_30m).execute
-end
+# logger.info 'Metrics missing readings scheduled to run every 30 minutes'
+# scheduler_30m.every '30m' do
+#   processSignals
+#   Executables::MissingReadings.new(scheduler_30m).execute
+# end
 
-[scheduler_1m, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)
+#[scheduler_1m, scheduler_5m, scheduler_15m, scheduler_30m].map(&:join)
+[scheduler_1m, scheduler_5m].map(&:join)

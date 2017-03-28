@@ -27,19 +27,21 @@ class Nic
 
   def submit_delete(nic_endpoint)
     logger.debug "ignoring nic delete: #{nic_endpoint}"
-    # logger.info "Deleting nic #{platform_id} for machine #{machine.platform_id} from OnPrem API, at nic_endpoint #{nic_endpoint}"
-    # begin
-    #   response = hyper_client.delete(nic_endpoint)
-    #   self.record_status = 'verified_delete' if response.code == 204
-    # rescue RestClient::ResourceNotFound => e
-    #   logger.error "Error deleting nic #{platform_id} for machine #{machine.platform_id} from OnPrem API"
-    #   logger.debug "#{self.inspect}"
-    #   logger.debug e.message
-    #   self.record_status = 'unverified_delete'
-    # rescue
-    #   logger.error "Error deleting machine '#{name} from OnPrem API"
-    #   raise
-    # end
+    logger.info "Deleting nic #{platform_id} for machine #{machine.platform_id} from OnPrem API, at nic_endpoint #{nic_endpoint}"
+    begin
+      self.status = 'deleted'
+      response = hyper_client.put(nic_endpoint)
+      self.record_status = 'verified_delete' #if response.code == 204
+    rescue RestClient::ResourceNotFound => e
+      logger.error "Error deleting nic #{platform_id} for machine #{machine.platform_id} from OnPrem API"
+      logger.debug "#{self.inspect}"
+      logger.debug e.message
+      self.record_status = 'unverified_delete'
+    rescue
+      logger.error "Error deleting machine '#{name} from OnPrem API"
+      self.record_status = 'unverified_delete'
+#      raise
+    end
 
     self
   end
