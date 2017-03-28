@@ -84,13 +84,13 @@ module RbVmomiExtensions
                   logger.debug cs.inspect
                 end
               end
-            end
+            end if cs.val
           elsif ( cs.name =~ /^layoutEx.file$/ )
             updated_attributes[:disk_map] ||= Hash.new{|h,k| h[k] = Hash.new}
 
             cs.val.each {|file_layout_ex_file_info|
               file_key = file_layout_ex_file_info.key
-              updated_attributes[:disk_map][file_key][:size] = file_layout_ex_file_info.size }
+              updated_attributes[:disk_map][file_key][:size] = file_layout_ex_file_info.size } if cs.val
           elsif ( cs.name =~ /memorySizeMB/ )
             updated_attributes[cs.name.to_sym] = cs.val ? (cs.val * 1024**2) : 0
           else
@@ -186,7 +186,7 @@ module RbVmomiExtensions
               begin
                 if ( k == :speed_mbits )
                   hba_attrs[:speed_mbits] = case
-                                            when hba.respond_to?(:maxSpeedMb) then hba.maxSpeedMb         # RbVmomi::VIM::HostInternetScsiHba has 'maxSpeedMb' (megabits/second)
+                                            when hba.respond_to?(:maxSpeedMb) then hba.maxSpeedMb         # RbVmomi ::VIM::HostInternetScsiHba has 'maxSpeedMb' (megabits/second)
                                             when hba.respond_to?(:speed)      then hba.speed / 1_000_000  # RbVmomi::VIM::HostFibreChannelHba has 'speed' (bits/second)
                                             else 0
                                             end
