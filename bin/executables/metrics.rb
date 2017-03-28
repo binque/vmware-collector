@@ -13,7 +13,7 @@ module Executables
     end
 
     def execute
-      logger.info '- Loading Metrics from Vsphere handler'
+#      logger.info '- Loading Metrics from Vsphere handler'
 
       begin
         main_thread
@@ -23,7 +23,7 @@ module Executables
         @scheduler.shutdown
         exit(1)
       end
-      logger.info '- Metrics Loaded from Vsphere handler'
+#      logger.info '- Metrics Loaded from Vsphere handler'
     end
 
     private
