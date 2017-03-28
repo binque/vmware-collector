@@ -77,12 +77,12 @@ class MetricsCollector
       @readings << reading
     end
 
-    if (@readings.size <  machine_morefs.size) and (inventoried_time.fail_count < 10)
-      logger.warn "#{@readings.size} readings returned for query of #{machine_morefs.size} machines. Will try again later."
-      fail_count = inventoried_time.fail_count
-      inventoried_time.update_attribute(:fail_count, fail_count + 1)
-      return
-    end
+    # if (@readings.size <  machine_morefs.size) and (inventoried_time.fail_count < 10)
+    #   logger.warn "#{@readings.size} readings returned for query of #{machine_morefs.size} machines. Will try again later."
+    #   fail_count = inventoried_time.fail_count
+    #   inventoried_time.update_attribute(:fail_count, fail_count + 1)
+    #   return
+    # end
 
     logger.info "Adding #{@readings.size} readings to metrics collection"
 
