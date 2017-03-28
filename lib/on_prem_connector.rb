@@ -626,7 +626,7 @@ class OnPremConnector
 
       machines_by_platform_id[machine_json['custom_id']] = machine # CHECK if this is uniq
     end
-    logger.debug "machines_by_platform_id = > #{machines_by_platform_id.inspect} \n\n"
+#    logger.debug "machines_by_platform_id = > #{machines_by_platform_id.inspect} \n\n"
     machines_by_platform_id
   end
 
