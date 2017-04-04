@@ -80,6 +80,7 @@ class CollectorSyncronization
       logger.error e.to_s
       logger.error e.http_body
     end
+    raise e
   end
 
   def get_infrastructures_from_vsphere
