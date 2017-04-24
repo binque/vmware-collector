@@ -217,8 +217,8 @@ parameters:
   type: int
   displayName: "Machines per request"
   description: "Define the total of machines that are included on each request to obtain metrics from vsphere"
-    validations:
-      required: true
+  validations:
+    required: true
   advanced: true
   value: "500"  # TODO confirm this default
 - name: inventoried-limit
