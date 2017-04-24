@@ -3,7 +3,6 @@ kind: Template
 metadata:
   name: vmware-collector
   annotations:
-    version: 0.11
     displayName: "VMware Collector"
     description: "VMware Collector for vSphere 5.0+"
 objects:
@@ -216,11 +215,10 @@ parameters:
 - name: machines-by-inv-timestamp
   section: On-Prem
   type: int
-  validations:
-    displayName: "Machines per request"
+  displayName: "Machines per request"
+  description: "Define the total of machines that are included on each request to obtain metrics from vsphere"
     validations:
-      description: "Define the total of machines that are included on each request to obtain metrics from vsphere"
-  required: true
+      required: true
   advanced: true
   value: "500"  # TODO confirm this default
 - name: inventoried-limit
