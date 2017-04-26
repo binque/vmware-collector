@@ -22,12 +22,14 @@ class Network
   end
 
   def speed_or_default
-    if kind.eql?('WAN')
-      ENV['DEFAULT_WAN_IO'] || 100000000
-    elsif kind.eql?('SAN')
-      ENV['DEFAULT_DISK_IO'] || 100000000000
+    # It's expcted that the user-configured speed be provided in gigabits per second, so we multiply it out to bits per second
+    if ENV["DEFAULT_#{kind}_IO"]
+      ENV["DEFAULT_#{kind}_IO"].to_i * 1000000000
     else
-      ENV['DEFAULT_LAN_IO'] || 100000000000
+      case kind
+      when 'WAN' then 1000000000
+      when 'LAN' then 10000000000
+      when 'SAN' then 10000000000
+      end
     end
-  end
 end

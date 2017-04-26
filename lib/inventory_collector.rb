@@ -200,7 +200,7 @@ class InventoryCollector
     [ # Machine Attributes
         'name',
         'config.guestFullName', # !! This is throwing property error
-#        'config.instanceUuid',
+        'config.instanceUuid',
         'summary.config.numCpu',
         'summary.config.memorySizeMB',
         'summary.runtime.powerState',
@@ -241,19 +241,6 @@ class InventoryCollector
         obj: root_folder,
         selectSet: [
           find_folders,
-          # RbVmomi::VIM.TraversalSpec(
-          #   name: 'tsDatacenterVMFolder',
-          #   type: 'Datacenter',
-          #   path: 'vmFolder',
-          #   skip: true,
-          #   selectSet: [ RbVmomi::VIM.SelectionSpec(name: 'tsFolder') ] ),
-          # RbVmomi::VIM.TraversalSpec(
-          #   name: 'tsFolder',
-          #   type: 'Folder',
-          #   path: 'childEntity',
-          #   skip: false,
-          #   selectSet: [
-          #     RbVmomi::VIM.SelectionSpec(name: 'tsDatacenterVMFolder')] )
         ]
       ],
       propSet: [

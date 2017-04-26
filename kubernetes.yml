@@ -133,70 +133,80 @@ parameters:
 #vSphere questions
 - description: "Host address of vSphere"
   name: host
-  section: vSphere
   displayName: "vSphere Host"
+  section: vsphere
+  sectionDisplayName: vSphere
   validations:
     required: true
   type: string
 - name: user
-  section: vSphere
   displayName: "vSphere User"
+  section: vsphere
+  sectionDisplayName: vSphere
   validations:
     required: true
   type: string
   description: "Account used for vSphere access"
 - name: password
-  section: vSphere
+  section: vsphere
+  sectionDisplayName: vSphere
   displayName: "vSphere Password"
   validations:
     required: true
   type: password
   description: "vSphere account password"
 - name: ignore-ssl-errors
-  section: vSphere
+  section: vsphere
+  sectionDisplayName: vSphere
   displayName: "Ignore SSL validation errors?"
   validations:
     required: true
   type: boolean
-  value: "false"
-  description: "Perform strict SSL validation. Do not enable if using self-signed SSL certificates"
+  value: "true"
+  description: "Do not perform strict SSL validation. Disable if using self-signed SSL certificates"
 - name: readings-batch-size
-  section: vSphere
+  section: vsphere
+  sectionDisplayName: vSphere
   displayName: "Max Query Metrics"
   type: int
   value: "64"
-  description: "Limit the number of entities that are included in a database query."
-  advanced: true
+  description: "Limit the number of machines per performance metrics query. Should match the vpxd.stats.maxquerymetrics vCenter setting"
 # on prem questions
 - name: api-host
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: string
   displayName: "Meter API Host"
   description: "Host address of 6fusion Meter"
   validations:
     required: true
   expandExpression: ${METER_API_HOST}
+  advanced: true
 - name: api-endpoint
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: string
   displayName: "Meter API Version"
   description: "Versioend endpoint to use for Meter API"
   validations:
     required: true
   value: "api/v1"
+  advanced: true
 - name: organization-id
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: string
   displayName: "Organization ID"
   description: "ID of organization object in the 6fusion Meter API"
   validations:
     required: true
   expandExpression: ${ORGANIZATION_ID}
+  advanced: true
 - name: log-level
-  section: vSphere
+  section: on-prem
+  sectionDisplayName: vSphere
   displayName: "Log Level"
-  validations:
-    required: false
+  advanced: true
   value: info
   type: enum
   options:
@@ -206,7 +216,8 @@ parameters:
     - error
     - fatal
 - name: registration-date
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: string
   displayName: "Registration Date"
   description: "Time to start collection from."
@@ -214,8 +225,10 @@ parameters:
   validations:
     required: true
   expandExpression: "`Time.now`"
+  advanced: true
 - name: machines-by-inv-timestamp
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: int
   displayName: "Machines per request"
   description: "Define the total of machines that are included on each request to obtain metrics from vsphere"
@@ -224,38 +237,42 @@ parameters:
   advanced: true
   value: "500"  # TODO confirm this default
 - name: inventoried-limit
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: int
   displayName: "Inventory Limit"
   description: "The number of inventoried timestamps that each replica controller will take each round"
   validations:
-    required: false
+    required: true
   value: "5"  # TODO confirm this default
   advanced: true
 - name: default-disk-io
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: int
   displayName: "Default Disk I/O"
   description: "The value to use for Disk I/O if the collector cannot determine the actual disk I/O speed"
   validations:
-    required: false
-  value: "10000000000"
-  advanced: true
+    required: true
+  value: "10"
+  suffix: "Gbps"
 - name: default-lan-io
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: int
   displayName: "Default LAN I/O"
   description: "The value to use for LAN I/O if the collector cannot determine the actual LAN I/O speed"
   validations:
-    required: false
-  value: "10000000000"
-  advanced: true
+    required: true
+  value: "10"
+  suffix: "Gbps"
 - name: default-wan-io
-  section: On-Prem
+  section: on-prem
+  sectionDisplayName: Meter
   type: int
   displayName: "Default WAN I/O"
   description: "The value to use for WAN I/O if the collector cannot determine the actual WAN I/O speed"
   validations:
-    required: false
-  advanced: true
-  value: "100000000" 
+    required: true
+  value: "1"
+  suffix: "Gbps"
