@@ -134,21 +134,21 @@ parameters:
 - description: "Host address of vSphere"
   name: host
   displayName: "vSphere Host"
-  section: vsphere
+  section: vsphere-secret
   sectionDisplayName: vSphere
   validations:
     required: true
   type: string
 - name: user
   displayName: "vSphere User"
-  section: vsphere
+  section: vsphere-secret
   sectionDisplayName: vSphere
   validations:
     required: true
   type: string
   description: "Account used for vSphere access"
 - name: password
-  section: vsphere
+  section: vsphere-secret
   sectionDisplayName: vSphere
   displayName: "vSphere Password"
   validations:
@@ -156,7 +156,7 @@ parameters:
   type: password
   description: "vSphere account password"
 - name: ignore-ssl-errors
-  section: vsphere
+  section: vsphere-secret
   sectionDisplayName: vSphere
   displayName: "Ignore SSL validation errors?"
   validations:
@@ -165,7 +165,7 @@ parameters:
   value: "true"
   description: "Do not perform strict SSL validation. Disable if using self-signed SSL certificates"
 - name: readings-batch-size
-  section: vsphere
+  section: vsphere-secret
   sectionDisplayName: vSphere
   displayName: "Max Query Metrics"
   type: int
@@ -173,7 +173,7 @@ parameters:
   description: "Limit the number of machines per performance metrics query. Should match the vpxd.stats.maxquerymetrics vCenter setting"
 # on prem questions
 - name: api-host
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: string
   displayName: "Meter API Host"
@@ -183,7 +183,7 @@ parameters:
   expandExpression: ${METER_API_HOST}
   advanced: true
 - name: api-endpoint
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: string
   displayName: "Meter API Version"
@@ -193,7 +193,7 @@ parameters:
   value: "api/v1"
   advanced: true
 - name: organization-id
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: string
   displayName: "Organization ID"
@@ -203,7 +203,7 @@ parameters:
   expandExpression: ${ORGANIZATION_ID}
   advanced: true
 - name: log-level
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: vSphere
   displayName: "Log Level"
   advanced: true
@@ -216,7 +216,7 @@ parameters:
     - error
     - fatal
 - name: registration-date
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: string
   displayName: "Registration Date"
@@ -227,7 +227,7 @@ parameters:
   expandExpression: "`Time.now`"
   advanced: true
 - name: machines-by-inv-timestamp
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: int
   displayName: "Machines per request"
@@ -237,7 +237,7 @@ parameters:
   advanced: true
   value: "500"  # TODO confirm this default
 - name: inventoried-limit
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: int
   displayName: "Inventory Limit"
@@ -247,7 +247,7 @@ parameters:
   value: "5"  # TODO confirm this default
   advanced: true
 - name: default-disk-io
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: int
   displayName: "Default Disk I/O"
@@ -257,7 +257,7 @@ parameters:
   value: "10"
   suffix: "Gbps"
 - name: default-lan-io
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: int
   displayName: "Default LAN I/O"
@@ -267,7 +267,7 @@ parameters:
   value: "10"
   suffix: "Gbps"
 - name: default-wan-io
-  section: on-prem
+  section: on-prem-secret
   sectionDisplayName: Meter
   type: int
   displayName: "Default WAN I/O"
