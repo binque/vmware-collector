@@ -32,4 +32,6 @@ class Network
       when 'SAN' then 10000000000
       end
     end
+  end
+
 end
