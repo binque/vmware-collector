@@ -109,7 +109,7 @@ class CollectorSyncronization
         infrastructure = Infrastructure.where(name: inf_json['name']).first || Infrastructure.where(platform_id: inf_json['custom_id']).first
         logger.debug infrastructure.inspect
         if infrastructure
-          logger.debug "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
+          logger.info "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
           if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
             PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
                                     remote_id: inf_json['id'])
@@ -119,6 +119,7 @@ class CollectorSyncronization
     else
       logger.error "Error retrieving infrastructures from API: #{response.code}"
       logger.debug response.body
+      exit 1
     end
   end
 
@@ -137,7 +138,6 @@ class CollectorSyncronization
           if  Machine.where(remote_id: machine_json['id']).empty?
             unless machine_json['status'].eql?('deleted')
               logger.debug "Creating machine #{machine_json['name']} from retrieved API data"
-              puts "inf remote id: #{infrastructure.remote_id}"
               Machine.create({ name: machine_json['name'],
                                remote_id: machine_json['id'],
                                platform_id: machine_json['custom_id'],
@@ -152,6 +152,7 @@ class CollectorSyncronization
       else
         logger.error "Error retrieving machines from API: #{response.code}"
         logger.debug response.body
+        exit 1
       end
     end
 
@@ -180,7 +181,7 @@ class CollectorSyncronization
 
   def collect_machine_inventory
     time_to_query = Time.now.truncated
-    puts "Collecting inventory for infrastructures: #{Infrastructure.all}"
+    logger.info "Collecting inventory for infrastructures: #{Infrastructure.all}"
     Infrastructure.all.each do |infrastructure|
       logger.info "Collecting inventory for #{infrastructure.name}"
       begin

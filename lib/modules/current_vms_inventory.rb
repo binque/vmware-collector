@@ -12,8 +12,6 @@ module CurrentVmsInventory
   end
 
   def split_machine_inventory(inventory)
-    puts "inventory: #{inventory}"
-    puts "inventory slice: #{inventory.each_slice(configuration[:on_prem_machines_by_inv_timestamp].to_i).to_a}"
     inventory.each_slice(configuration[:on_prem_machines_by_inv_timestamp].to_i).to_a
   end
 

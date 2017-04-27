@@ -22,7 +22,7 @@ class Network
   end
 
   def speed_or_default
-    # It's expcted that the user-configured speed be provided in gigabits per second, so we multiply it out to bits per second
+    # It's expcted that the user-configured speed be provided in gigabits per second, so we multiply it out to bits per second (for API submission)
     if ENV["DEFAULT_#{kind}_IO"]
       ENV["DEFAULT_#{kind}_IO"].to_i * 1000000000
     else

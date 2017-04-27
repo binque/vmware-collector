@@ -22,6 +22,7 @@ class Machine
   field :name, type: String # A bunch of bad defaults, since the OnPrem API doesn't support nils
   field :os,            type: String,   default: ""
   field :virtual_name,  type: String,   default: ""
+  field :uuid,          type: String,   default: ""
   field :cpu_count,     type: Integer,  default: 1  # Console requires a value for count and mhz > 0
   field :cpu_speed_hz, type: Integer,  default: 1
   field :memory_bytes,  type: Integer,  default: 0
@@ -79,6 +80,7 @@ class Machine
       name:         :name,
       os:           :'config.guestFullName',
       virtual_name: :platform_id,
+      uuid:         :'config.instanceUuid',
       cpu_count:    :'summary.config.numCpu',
       memory_bytes: :'summary.config.memorySizeMB',
       status:       :'summary.runtime.powerState'

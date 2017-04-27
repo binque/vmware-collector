@@ -30,8 +30,7 @@ class InventoryCollector
     # so we added a validation @data_center.present? && @data_center.vmFolder.present?
     VSphere.wrapped_vsphere_request do
       @vsphere_session.propertyCollector.CreateFilter(spec: InventoryCollector.vm_filter_spec(
-          InventoryCollector.vm_properties, @data_center.vmFolder
-      ),
+                                                        InventoryCollector.vm_properties, @data_center.vmFolder),
                                                       partialUpdates: false)
     end if @data_center.present? && @data_center.vmFolder.present?
     # These two maps are needed to get cpu_speed_hz from Hosts for Machines
