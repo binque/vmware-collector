@@ -109,7 +109,7 @@ class CollectorSyncronization
         inf_json = JSON::parse(response.body)
         if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
           logger.debug "Matched #{mongo_inf.name}: creating local remote ID entry"
-          PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
+          PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
                                   remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
         end
       # infs['embedded']['infrastructures'].each do |inf_json|
