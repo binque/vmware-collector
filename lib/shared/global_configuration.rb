@@ -32,6 +32,7 @@ module GlobalConfiguration
 
       @logger.level = fetch(:on_prem_log_level)
       Logging::MeterLog.instance.logger.level = fetch(:on_prem_log_level)
+      Logging::MeterLog.instance.log_level = fetch(:on_prem_log_level)
     end
 
     def vsphere_configured?
@@ -104,7 +105,6 @@ module GlobalConfiguration
           on_prem_api_endpoint: method(:prepend_on_prem_api_host),
           on_prem_oauth_endpoint: method(:prepend_on_prem_api_host),
           # on_prem_infrastructure_id: method(:get_an_infrastructure_id),
-          mongoid_log_level: method(:infer_mongoid_log_level)
       }
     end
 
@@ -154,10 +154,6 @@ module GlobalConfiguration
                      on_prem_machines_by_inv_timestamp: '500',
                      on_prem_inventoried_limit: 10,
                      on_prem_log_level: Logger::DEBUG,
-                     # mongoid_log_level: Logger::INFO,
-                     # mongoid_hosts: 'localhost:27017',
-                     # mongoid_database: '6fusion_collector',
-                     # mongoid_port: DEFAULT_EMPTY_VALUE,
                      verified_api_connection: false,
                      verified_vsphere_connection: true,
                      # container_namespace: '6fusion',
@@ -232,13 +228,6 @@ module GlobalConfiguration
       proxy_string += host_uri.host
       proxy_string += ":#{fetch(:u6_proxy_port)}" if key?(:on_prem_proxy_port)
       proxy_string
-    end
-
-    def infer_mongoid_log_level(*)
-      # Mongoid should only be bumped up to debug if it's been explicitly set. I.e., don't assume that because the
-      #  meter is at debug, mongoid should be as well (it's really noisy)
-      fetch(:mongoid_log_level,
-            fetch(:on_prem_log_level, Logger::INFO) <= Logger::INFO ? Logger::INFO : fetch(:on_prem_log_level))
     end
 
     def proxy_port_unless_provided(*)

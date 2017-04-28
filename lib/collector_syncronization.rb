@@ -148,6 +148,7 @@ class CollectorSyncronization
 
     Infrastructure.all.each do |infrastructure|
       logger.debug "retrieving machines from #{machines_url}?infrastructure_id=#{infrastructure.remote_id}"
+      logger.info "retrieving machines from #{machines_url}?infrastructure_id=#{infrastructure.remote_id}"
       response = hyper_client.get("#{machines_url}?infrastructure_id=#{infrastructure.remote_id}")
 
       if response.code == 200

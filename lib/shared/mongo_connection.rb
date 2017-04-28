@@ -22,9 +22,6 @@ module MongoConnection
 
     Mongoid::Config.load_configuration(load_params)
 
-#    Mongoid.logger.level = mongoid_config[:mongoid_log_level]
-#    Moped.logger.level   = Mongoid.logger.level
-
     # Test to verify we can connect
     begin
       Mongoid::Sessions.default.databases
