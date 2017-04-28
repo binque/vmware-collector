@@ -102,7 +102,7 @@ class CollectorSyncronization
 
     #FIXME add in fallback for datacenter
 
-    Infrastructures.each do |mongo_inf|
+    Infrastructure.all.each do |mongo_inf|
       logger.debug "retrieving infrastructure #{mongo_inf.custom_id}"
       response = hyper_client.get(infrastructures_url(mongo_inf.custom_id))
       if response.code == 200

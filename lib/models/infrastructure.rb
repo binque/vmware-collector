@@ -39,6 +39,8 @@ class Infrastructure
   scope :to_be_created_or_updated, -> { where(:record_status.in => %w(created updated)) }
 
   index(record_status: 1)
+  index(remote_id: 1)
+  index(platform_id: 1)
 
   # TODO: Verify if we still need this index
 
