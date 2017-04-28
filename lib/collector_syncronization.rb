@@ -101,7 +101,7 @@ class CollectorSyncronization
     # response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
 
     #FIXME add in fallback for datacenter
-    logger.debug "Retrieving known infrastructures from API"
+    logger.info "Retrieving known infrastructures from API"
 
     if Infrastructure.all.size == 0
       logger.warn "No data centers discoverd. Exiting..."
@@ -109,12 +109,12 @@ class CollectorSyncronization
     end
 
     Infrastructure.all.each do |mongo_inf|
-      logger.debug "retrieving infrastructure #{mongo_inf.custom_id}"
+      logger.info "retrieving infrastructure #{mongo_inf.custom_id}"
       response = hyper_client.get(infrastructure_url(infrastructure_id: mongo_inf.custom_id))
       if response.code == 200
         inf_json = JSON::parse(response.body)
         if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
-          logger.debug "Matched #{mongo_inf.name}: creating local remote ID entry"
+          logger.info "Matched #{mongo_inf.name}: creating local remote ID entry"
           PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
                                   remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
         end
