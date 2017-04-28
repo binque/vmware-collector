@@ -43,8 +43,8 @@ class CollectorSyncronization
     logger.info 'Syncing items'
 
     @on_prem_connector = OnPremConnector.new
-    get_infrastructures_from_api
     get_infrastructures_from_vsphere
+    get_infrastructures_from_api  # relies on discovered datacenters - must come after get_from_vsphere
     submit_infrastructures
 
     # First block of code is primarily to detect deletes
