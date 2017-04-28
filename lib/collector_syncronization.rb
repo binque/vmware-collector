@@ -101,6 +101,12 @@ class CollectorSyncronization
     # response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
 
     #FIXME add in fallback for datacenter
+    logger.debug "Retrieving known infrastructures from API"
+
+    if Infrastructure.size == 0
+      logger.warn "No data centers discoverd. Exiting..."
+      exit 1
+    end
 
     Infrastructure.all.each do |mongo_inf|
       logger.debug "retrieving infrastructure #{mongo_inf.custom_id}"
