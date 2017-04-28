@@ -103,7 +103,7 @@ class CollectorSyncronization
     #FIXME add in fallback for datacenter
     logger.debug "Retrieving known infrastructures from API"
 
-    if Infrastructure.size == 0
+    if Infrastructure.length == 0
       logger.warn "No data centers discoverd. Exiting..."
       exit 1
     end
