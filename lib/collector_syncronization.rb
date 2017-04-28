@@ -118,6 +118,7 @@ class CollectorSyncronization
           PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
                                   remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
         end
+        mongo_inf.update_attribute(:record_status, :updated)
       # infs['embedded']['infrastructures'].each do |inf_json|
       #   logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
       #   logger.debug inf_json
