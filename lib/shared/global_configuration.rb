@@ -32,7 +32,7 @@ module GlobalConfiguration
 
       @logger.level = fetch(:on_prem_log_level)
       Logging::MeterLog.instance.logger.level = fetch(:on_prem_log_level)
-      Logging::MeterLog.instance.log_level = fetch(:on_prem_log_level)
+      Logging::MeterLog.log_level = fetch(:on_prem_log_level)
     end
 
     def vsphere_configured?
