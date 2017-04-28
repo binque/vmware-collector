@@ -250,7 +250,6 @@ module RbVmomiExtensions
       logger = nil
       propSet.each do |cs|
         begin
-          puts "cs.name=#{cs.name}"
           if ( cs.name =~ /^name|hostFolder$/ )
             attributes[cs.name.to_sym] = cs.val
           elsif ( cs.name == 'network' )

@@ -19,6 +19,7 @@ class Infrastructure
   field :remote_id, type: String
   field :name, type: String
   field :record_status, type: String
+  field :vcenter_id, type: String
   # Tags are currently static defaults only, not updated during collection
   field :tags, type: Array, default: ['platform:VMware', 'collector:VMware']
 
@@ -96,17 +97,17 @@ class Infrastructure
   def submit_create
     response = nil
     begin
-      logger.info "Submitting #{name_with_prefix} to API for creation in OnPrem"
+      logger.info "Submitting #{name} to API for creation in OnPrem"
       response = hyper_client.post(infrastructures_post_url, api_format)
       if response && response.code == 200
         self.remote_id = response.json['id']
         update_attribute(:record_status, 'verified_create') # record_status will be ignored by local_inventory class, so we need to update it "manually"
       else
-        logger.error "Unable to create infrastructure in OnPrem for #{name_with_prefix}"
+        logger.error "Unable to create infrastructure in OnPrem for #{name}"
         logger.debug "API reponse: #{response}"
       end
     rescue StandardError => e
-      logger.error "Error creating infrastructure in OnPrem for #{name_with_prefix}"
+      logger.error "Error creating infrastructure in OnPrem for #{name}"
       logger.error e.message
       logger.debug e
       raise
@@ -115,7 +116,7 @@ class Infrastructure
   end
 
   def submit_update
-    logger.info "Updating infrastructure #{name_with_prefix} in OnPrem API"
+    logger.info "Updating infrastructure #{name} in OnPrem API"
     begin
       response = hyper_client.put(infrastructure_url(infrastructure_id: remote_id), api_format.merge(status: 'Active'))
       response_json = response.json
@@ -123,14 +124,14 @@ class Infrastructure
         self.record_status = 'verified_update'
       end
     rescue RuntimeError => e
-      logger.error "Error updating infrastructure '#{name_with_prefix} in OnPrem"
+      logger.error "Error updating infrastructure '#{name} in OnPrem"
       raise e
     end
     self
   end
 
   def attribute_map
-    { name: :name_with_prefix }
+    { name: :name }
   end
 
   def vm_to_host_map
@@ -147,17 +148,15 @@ class Infrastructure
     @hyper_client ||= HyperClient.new
   end
 
-  def name_with_prefix
-    ENV['VCENTER_LABEL'] ?
-      "#{ENV['VCENTER_LABEL']} #{name}" :
-      name
+  def custom_id
+    "#{platform_id}-#{vcenter_id}"
   end
 
   # Format to submit to OnPrem Console API
   def api_format
     {
-      name: name_with_prefix,
-      custom_id: platform_id,
+      name: name,
+      custom_id: custom_id,
       tags: tags,
       summary: {
         # Counts

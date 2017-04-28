@@ -97,29 +97,41 @@ class CollectorSyncronization
   def get_infrastructures_from_api
     hyper_client = HyperClient.new
     # local_platform_remote_id_inventory = PlatformRemoteIdInventory.new
-    logger.debug "retrieving infrastructures from #{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}"
-    response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
+    # logger.debug "retrieving infrastructures from #{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}"
+    # response = hyper_client.get("#{infrastructures_url}?organization_id=#{@configuration[:on_prem_organization_id]}")
 
-    if response.code == 200
-      infs = JSON::parse(response.body)
+    #FIXME add in fallback for datacenter
 
-      infs['embedded']['infrastructures'].each do |inf_json|
-        logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
-        logger.debug inf_json
-        infrastructure = Infrastructure.where(name: inf_json['name']).first || Infrastructure.where(platform_id: inf_json['custom_id']).first
-        logger.debug infrastructure.inspect
-        if infrastructure
-          logger.info "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
-          if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
-            PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
-                                    remote_id: inf_json['id'])
-          end
+    Infrastructures.each do |mongo_inf|
+      logger.debug "retrieving infrastructure #{mongo_inf.custom_id}"
+      response = hyper_client.get(infrastructures_url(mongo_inf.custom_id))
+      if response.code == 200
+        inf_json = JSON::parse(response.body)
+        if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
+          logger.debug "Matched #{mongo_inf.name}: creating local remote ID entry"
+          PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
+                                  remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
         end
+      # infs['embedded']['infrastructures'].each do |inf_json|
+      #   logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
+      #   logger.debug inf_json
+      #   infrastructure = Infrastructure.where(name: inf_json['name']).first)
+      #   logger.debug infrastructure.inspect
+      #   if infrastructure
+      #     logger.info "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
+      #     if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
+      #       PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
+      #                               remote_id: inf_json['id'])
+      #     end
+      #   end
+      # end
+      elsif response.code == 404
+        logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API"
+      else
+        logger.error "Error retrieving infrastructures from API: #{response.code}"
+        logger.debug response.body
+        exit 1
       end
-    else
-      logger.error "Error retrieving infrastructures from API: #{response.code}"
-      logger.debug response.body
-      exit 1
     end
   end
 

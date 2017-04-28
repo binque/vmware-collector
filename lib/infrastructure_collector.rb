@@ -93,6 +93,7 @@ class InfrastructureCollector
       end
       data_centers_hash.each do |platform_id, properties|
         properties[:name] = "#{properties[:name]} (vCenter:#{@vcenter_id})"
+        properties[:vcenter_id] = @vcenter_id
         host_ids = hosts_for_datacenter(properties[:hostFolder])
 
         properties[:hosts] = @host_objects.select { |k| host_ids.include?(k) }.values
