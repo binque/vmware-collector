@@ -104,7 +104,7 @@ class CollectorSyncronization
 
     Infrastructure.all.each do |mongo_inf|
       logger.debug "retrieving infrastructure #{mongo_inf.custom_id}"
-      response = hyper_client.get(infrastructures_url(mongo_inf.custom_id))
+      response = hyper_client.get(infrastructure_url(mongo_inf.custom_id))
       if response.code == 200
         inf_json = JSON::parse(response.body)
         if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
