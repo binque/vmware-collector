@@ -119,21 +119,9 @@ class CollectorSyncronization
                                   remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
         end
         mongo_inf.update_attribute(:record_status, :updated)
-      # infs['embedded']['infrastructures'].each do |inf_json|
-      #   logger.debug "Checking if #{inf_json['name']}/#{inf_json['custom_id']} belongs to this collector"
-      #   logger.debug inf_json
-      #   infrastructure = Infrastructure.where(name: inf_json['name']).first)
-      #   logger.debug infrastructure.inspect
-      #   if infrastructure
-      #     logger.info "Syncing infrastructure #{inf_json.to_yaml} from API with local #{infrastructure.inspect}"
-      #     if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
-      #       PlatformRemoteId.create(infrastructure: infrastructure.platform_id,
-      #                               remote_id: inf_json['id'])
-      #     end
-      #   end
-      # end
+        mongo_inf.update_attribute(:remote_id, inf_json['id'])
       elsif response.code == 404
-        logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API"
+        logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API. Will be created on next infrastructure collection run."
       else
         logger.error "Error retrieving infrastructures from API: #{response.code}"
         logger.debug response.body
