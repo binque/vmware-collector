@@ -110,22 +110,33 @@ class CollectorSyncronization
 
     Infrastructure.all.each do |mongo_inf|
       logger.info "retrieving infrastructure #{mongo_inf.custom_id}"
-      response = hyper_client.get(infrastructure_url(infrastructure_id: mongo_inf.custom_id))
-      if response.code == 200
-        inf_json = JSON::parse(response.body)
-        if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
-          logger.info "Matched #{mongo_inf.name}: creating local remote ID entry"
-          PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
-                                  remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
+      begin
+        response = hyper_client.get(infrastructure_url(infrastructure_id: mongo_inf.custom_id))
+        if response.code == 200
+          inf_json = JSON::parse(response.body)
+          if PlatformRemoteId.where(remote_id: inf_json['id']).empty?
+            logger.info "Matched #{mongo_inf.name}: creating local remote ID entry"
+            PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
+                                    remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
+          end
+          mongo_inf.update_attribute(:record_status, :updated)
+          mongo_inf.update_attribute(:remote_id, inf_json['id'])
+        #  is this necessary given the expcetion block handling?
+        elsif response.code == 404
+          logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API. Will be created on next infrastructure collection run."
+        else
+          logger.error "Error retrieving infrastructures from API: #{response.code}"
+          logger.debug response.body
+          exit 1
         end
-        mongo_inf.update_attribute(:record_status, :updated)
-        mongo_inf.update_attribute(:remote_id, inf_json['id'])
-      elsif response.code == 404
-        logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API. Will be created on next infrastructure collection run."
-      else
-        logger.error "Error retrieving infrastructures from API: #{response.code}"
-        logger.debug response.body
-        exit 1
+      rescue RestClient::ExceptionWithResponse => e
+        if e.http_code == 404
+          logger.info "Infrastructure #{mongo_inf.custom_id} not found in Meter API. Will be created on next infrastructure collection run."
+        else
+          logger.error "Error retrieving infrastructures from API: #{response.code}"
+          logger.debug response.body
+          exit 1
+        end
       end
     end
   end
