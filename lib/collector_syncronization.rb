@@ -119,7 +119,7 @@ class CollectorSyncronization
             PlatformRemoteId.create(infrastructure: mongo_inf.platform_id,
                                     remote_id: inf_json['id']) unless (PlatformRemoteId.where(remote_id: inf_json['id']).size > 0)
           end
-          mongo_inf.update_attribute(:record_status, :updated)
+          mongo_inf.update_attribute(:record_status, :created)
           mongo_inf.update_attribute(:remote_id, inf_json['id'])
         #  is this necessary given the expcetion block handling?
         elsif response.code == 404
